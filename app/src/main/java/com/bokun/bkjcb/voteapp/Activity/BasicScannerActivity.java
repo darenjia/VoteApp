@@ -1,30 +1,16 @@
-package com.bokun.bkjcb.voteapp;
+package com.bokun.bkjcb.voteapp.Activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.zxing.Result;
-import com.google.zxing.client.result.AddressBookParsedResult;
-import com.google.zxing.client.result.ISBNParsedResult;
-import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ParsedResultType;
-import com.google.zxing.client.result.ProductParsedResult;
-import com.google.zxing.client.result.TextParsedResult;
-import com.google.zxing.client.result.URIParsedResult;
 import com.mylhyl.zxing.scanner.OnScannerCompletionListener;
 import com.mylhyl.zxing.scanner.common.Scanner;
-import com.mylhyl.zxing.scanner.result.AddressBookResult;
-import com.mylhyl.zxing.scanner.result.ISBNResult;
-import com.mylhyl.zxing.scanner.result.ProductResult;
-import com.mylhyl.zxing.scanner.result.URIResult;
 
 /**
  * Created by hupei on 2016/7/7.

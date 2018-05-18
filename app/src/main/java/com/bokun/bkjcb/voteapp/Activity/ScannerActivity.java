@@ -1,4 +1,4 @@
-package com.bokun.bkjcb.voteapp;
+package com.bokun.bkjcb.voteapp.Activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.bokun.bkjcb.voteapp.R;
 import com.google.zxing.Result;
 import com.mylhyl.zxing.scanner.ScannerView;
 import com.mylhyl.zxing.scanner.common.Scanner;
@@ -45,7 +46,6 @@ public class ScannerActivity extends DeCodeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        Toast.makeText(ScannerActivity.this, "请给予权限", Toast.LENGTH_LONG).show();
         mScannerView = (ScannerView) findViewById(R.id.scanner_view);
         mScannerView.setOnScannerCompletionListener(this);
 

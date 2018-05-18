@@ -1,4 +1,4 @@
-package com.bokun.bkjcb.voteapp;
+package com.bokun.bkjcb.voteapp.Activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

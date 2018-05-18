@@ -1,4 +1,4 @@
-package com.bokun.bkjcb.voteapp;
+package com.bokun.bkjcb.voteapp.Activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bokun.bkjcb.voteapp.R;
 import com.mylhyl.zxing.scanner.common.Scanner;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK && requestCode == BasicScannerActivity.REQUEST_CODE_SCANNER) {
             String s = data.getStringExtra(Scanner.Scan.RESULT);
             textView.setText(s);
+            VoteActivity.gotoVoteActivity(this,s);
         }
     }
 

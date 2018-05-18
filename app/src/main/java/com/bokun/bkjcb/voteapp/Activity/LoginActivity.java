@@ -1,10 +1,9 @@
-package com.bokun.bkjcb.voteapp;
+package com.bokun.bkjcb.voteapp.Activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +12,11 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import static android.Manifest.permission.READ_CONTACTS;
+import com.bokun.bkjcb.voteapp.R;
 
 
 public class LoginActivity extends AppCompatActivity {
