@@ -19,7 +19,6 @@ import android.widget.ToggleButton;
 import com.google.zxing.Result;
 import com.mylhyl.zxing.scanner.ScannerView;
 import com.mylhyl.zxing.scanner.common.Scanner;
-import com.mylhyl.zxing.scanner.decode.QRDecode;
 
 /**
  * 扫描
@@ -50,7 +49,7 @@ public class ScannerActivity extends DeCodeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-
+        Toast.makeText(ScannerActivity.this, "请给予权限", Toast.LENGTH_LONG).show();
         mScannerView = (ScannerView) findViewById(R.id.scanner_view);
         mScannerView.setOnScannerCompletionListener(this);
 

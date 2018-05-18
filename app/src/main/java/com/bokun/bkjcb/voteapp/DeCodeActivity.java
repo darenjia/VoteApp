@@ -1,7 +1,5 @@
 package com.bokun.bkjcb.voteapp;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -77,9 +75,9 @@ public class DeCodeActivity extends BasicScannerActivity {
         }
     }
 
-    public static void gotoActivity(Activity activity, byte[] bytes) {
+   /* public static void gotoActivity(Activity activity, byte[] bytes) {
         activity.startActivity(new Intent(activity, DeCodeActivity.class).putExtra("bytes", bytes));
-    }
+    }*/
 
     @Override
     public void onScannerCompletion(final Result rawResult, ParsedResult parsedResult, Bitmap barcode) {
