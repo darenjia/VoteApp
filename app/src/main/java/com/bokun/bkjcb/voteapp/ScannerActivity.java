@@ -1,17 +1,13 @@
 package com.bokun.bkjcb.voteapp;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -61,7 +57,7 @@ public class ScannerActivity extends DeCodeActivity {
             }
         });
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        /*findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(ScannerActivity.this, Manifest.permission
@@ -74,7 +70,7 @@ public class ScannerActivity extends DeCodeActivity {
                     //PickPictureTotalActivity.gotoActivity(ScannerActivity.this);
                 }
             }
-        });
+        });*/
 
         Bundle extras = getIntent().getExtras();
         int laserMode = extras.getInt(EXTRA_LASER_LINE_MODE);
@@ -184,13 +180,14 @@ public class ScannerActivity extends DeCodeActivity {
     public static void gotoActivity(Activity activity, boolean isBackResult
             , int laserMode, int scanMode, boolean showThumbnail, boolean isScanFullScreen
             , boolean isHideLaserFrame) {
-        activity.startActivityForResult(new Intent(Scanner.Scan.ACTION)
-                        .putExtra(BasicScannerActivity.EXTRA_RETURN_SCANNER_RESULT, isBackResult)
-                        .putExtra(ScannerActivity.EXTRA_LASER_LINE_MODE, laserMode)
-                        .putExtra(ScannerActivity.EXTRA_SCAN_MODE, scanMode)
-                        .putExtra(ScannerActivity.EXTRA_SHOW_THUMBNAIL, showThumbnail)
-                        .putExtra(ScannerActivity.EXTRA_SCAN_FULL_SCREEN, isScanFullScreen)
-                        .putExtra(ScannerActivity.EXTRA_HIDE_LASER_FRAME, isHideLaserFrame)
+        Intent intent = new Intent(activity, ScannerActivity.class);
+        intent.putExtra(BasicScannerActivity.EXTRA_RETURN_SCANNER_RESULT, isBackResult)
+                .putExtra(ScannerActivity.EXTRA_LASER_LINE_MODE, laserMode)
+                .putExtra(ScannerActivity.EXTRA_SCAN_MODE, scanMode)
+                .putExtra(ScannerActivity.EXTRA_SHOW_THUMBNAIL, showThumbnail)
+                .putExtra(ScannerActivity.EXTRA_SCAN_FULL_SCREEN, isScanFullScreen)
+                .putExtra(ScannerActivity.EXTRA_HIDE_LASER_FRAME, isHideLaserFrame);
+        activity.startActivityForResult(intent
                 , BasicScannerActivity.REQUEST_CODE_SCANNER);
     }
 }

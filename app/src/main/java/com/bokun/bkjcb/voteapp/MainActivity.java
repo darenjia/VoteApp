@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK && requestCode == BasicScannerActivity.REQUEST_CODE_SCANNER) {
             String s = data.getStringExtra(Scanner.Scan.RESULT);
             textView.setText(s);
         }
@@ -60,10 +60,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==PackageManager.PERMISSION_GRANTED){
-            ScannerActivity.gotoActivity(MainActivity.this, true, ScannerActivity.EXTRA_LASER_LINE_MODE_0, ScannerActivity.EXTRA_SCAN_MODE_0, false, false, false);
-        }else {
-            Toast.makeText(this,"无法打开相机",Toast.LENGTH_SHORT).show();
+        if (requestCode == 60) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                ScannerActivity.gotoActivity(MainActivity.this, true, ScannerActivity.EXTRA_LASER_LINE_MODE_0, ScannerActivity.EXTRA_SCAN_MODE_0, false, false, false);
+            } else {
+                Toast.makeText(this, "无法打开相机", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
