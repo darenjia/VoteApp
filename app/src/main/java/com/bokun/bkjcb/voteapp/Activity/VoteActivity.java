@@ -18,7 +18,7 @@ public class VoteActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vote);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("设置");
+        toolbar.setTitle("投票");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
