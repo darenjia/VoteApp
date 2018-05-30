@@ -84,7 +84,7 @@ public class HttpManager implements Runnable {
         HttpTransportSE ht;
         try {
 
-            String NAMESPACE = "http://zgzxjk/";
+            String NAMESPACE = "http://tempuri.org/";
             String METHOD_NAME = requestVo.methodName;
             //String URL = "http://192.168.137.1:1856/zgzxjkWebService.asmx";
             String URL = Constants.TEST_HTTPURL;
@@ -112,12 +112,8 @@ public class HttpManager implements Runnable {
             ht.call(null, envelope);
 //            ht.call(null, null);
             // 获取返回结果
-            SoapObject result = (SoapObject) envelope.bodyIn;
-           /* // 使用 getResponse 方法获得 WebService 方法的返回结果
-            SoapObject detail = (SoapObject) result.getProperty("GetUserResult");
-            // 解析返回的数据信息为 SoapObject 对象,对其进行解析
-            String date = detail.getProperty("success").toString();
-            String date1 = detail.getProperty("message").toString();*/
+            Object result = envelope.bodyIn;
+
             if (result != null) {
                 listener.action(RequestListener.EVENT_GET_DATA_SUCCESS, result);
             } else {
