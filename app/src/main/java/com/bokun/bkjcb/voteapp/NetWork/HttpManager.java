@@ -84,7 +84,7 @@ public class HttpManager implements Runnable {
         HttpTransportSE ht;
         try {
 
-            String NAMESPACE = "http://tempuri.org/";
+            String NAMESPACE = "http://votejk/";
             String METHOD_NAME = requestVo.methodName;
             //String URL = "http://192.168.137.1:1856/zgzxjkWebService.asmx";
             String URL = Constants.TEST_HTTPURL;

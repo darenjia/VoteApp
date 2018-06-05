@@ -6,7 +6,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
+import com.bokun.bkjcb.voteapp.Model.Match;
 import com.bokun.bkjcb.voteapp.Model.PersonInfo;
 import com.bokun.bkjcb.voteapp.R;
 import com.lzy.widget.HeaderScrollHelper;
@@ -16,10 +20,10 @@ import com.lzy.widget.HeaderScrollHelper;
  * Description :投票Fragment
  */
 public class VoteFragment extends Fragment implements HeaderScrollHelper.ScrollableContainer {
-    private PersonInfo info;
+    private Match.PersonBean  info;
     private View view;
 
-    public static VoteFragment newInstance(PersonInfo person) {
+    public static VoteFragment newInstance(Match.PersonBean person) {
         VoteFragment fragment = new VoteFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("Key", person);
@@ -30,9 +34,19 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        info = (PersonInfo) getArguments().getSerializable("Key");
+        info = (Match.PersonBean) getArguments().getSerializable("Key");
         view = inflater.inflate(R.layout.detail_view, container,false);
         //初始化详情视图
+        ImageView img=view.findViewById(R.id.detail_img);
+        TextView name=view.findViewById(R.id.detail_name);
+        TextView infos=view.findViewById(R.id.detail_info);
+        TextView title=view.findViewById(R.id.detail_title);
+        RatingBar score=view.findViewById(R.id.detail_score);
+
+        name.setText(info.getPerson());
+        infos.setText(info.getRemark());
+        title.setText(info.getPtitle());
+
         return view;
     }
 
