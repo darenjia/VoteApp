@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bokun.bkjcb.voteapp.Event.MessageEvent;
 import com.bokun.bkjcb.voteapp.Model.HttpResult;
@@ -40,7 +41,7 @@ public class LoginActivity extends BaseActivity implements RequestListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        //new CheckUpUtil(LoginActivity.this).checkUpadte(true,false);
         mEmailView = (EditText) findViewById(R.id.username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -110,16 +111,19 @@ public class LoginActivity extends BaseActivity implements RequestListener {
         HttpResult result = JsonParser.parseSoap((SoapObject) object);
         if (result != null && i == RequestListener.EVENT_GET_DATA_SUCCESS) {
             EventBus.getDefault().post(new MessageEvent(1, result));
+        } else {
+            showProgress(false);
+            Toast.makeText(this, "服务器错误!", Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     protected void action(MessageEvent event) {
         showProgress(false);
-        if(event.getResult().isSuccess()){
+        if (event.getResult().isSuccess()) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-        }else {
+        } else {
             mPasswordView.setError(getString(R.string.error_incorrect_password));
             mPasswordView.requestFocus();
         }

@@ -20,7 +20,7 @@ import ezy.boost.update.UpdateManager;
 
 /**
  * Created by DengShuai on 2017/11/2.
- * Description :
+ * Description :更新工具类
  */
 
 public class CheckUpUtil {
