@@ -13,7 +13,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bokun.bkjcb.voteapp.Event.MessageEvent;
 import com.bokun.bkjcb.voteapp.Model.HttpResult;
@@ -22,6 +21,7 @@ import com.bokun.bkjcb.voteapp.NetWork.HttpRequestVo;
 import com.bokun.bkjcb.voteapp.NetWork.JsonParser;
 import com.bokun.bkjcb.voteapp.NetWork.RequestListener;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
@@ -108,21 +108,22 @@ public class LoginActivity extends BaseActivity implements RequestListener {
 
     @Override
     public void action(int i, Object object) {
-        HttpResult result = JsonParser.parseSoap((SoapObject) object);
-        if (result != null && i == RequestListener.EVENT_GET_DATA_SUCCESS) {
-            EventBus.getDefault().post(new MessageEvent(1, result));
-        } else {
-            showProgress(false);
-            Toast.makeText(this, "服务器错误!", Toast.LENGTH_LONG).show();
+        HttpResult result = null;
+        if (i == RequestListener.EVENT_GET_DATA_SUCCESS) {
+            result = JsonParser.getData((SoapObject) object);
         }
+        EventBus.getDefault().post(new MessageEvent(i, result));
+
     }
 
     @Override
     protected void action(MessageEvent event) {
         showProgress(false);
-        if (event.getResult().isSuccess()) {
+        if (event.getType() == RequestListener.EVENT_GET_DATA_SUCCESS && event.getResult().isSuccess()) {
+            SPUtils.put(this, "UserID", JsonParser.getPerson(event.getResult().getData()).getId());
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
+            finish();
         } else {
             mPasswordView.setError(getString(R.string.error_incorrect_password));
             mPasswordView.requestFocus();

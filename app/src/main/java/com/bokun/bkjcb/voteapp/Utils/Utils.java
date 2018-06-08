@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
@@ -21,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.bokun.bkjcb.voteapp.R;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -358,7 +361,10 @@ public class Utils {
         }
         return null;
     }
-    /** 生成漂亮的颜色 */
+
+    /**
+     * 生成漂亮的颜色
+     */
     public static int generateBeautifulColor() {
         Random random = new Random();
         //为了让生成的颜色不至于太黑或者太白，所以对3个颜色的值进行限定
@@ -368,7 +374,9 @@ public class Utils {
         return Color.rgb(red, green, blue);//使用r,g,b混合生成一种新的颜色
     }
 
-    /** 获得状态栏的高度 */
+    /**
+     * 获得状态栏的高度
+     */
     public static int getStatusHeight(Context context) {
         int statusHeight = -1;
         try {
@@ -380,6 +388,22 @@ public class Utils {
             e.printStackTrace();
         }
         return statusHeight;
+    }
+
+    public static Drawable getRandomImage(Context context) {
+        int[] drawables = {R.drawable.person1,
+                R.drawable.person2,
+                R.drawable.person3,
+                R.drawable.person4,
+                R.drawable.person5,
+                R.drawable.person6,
+                R.drawable.person7,
+                R.drawable.person8,
+                R.drawable.person9,
+                R.drawable.person10
+        };
+        Random random = new Random();
+        return context.getResources().getDrawable(drawables[random.nextInt(9)]);
     }
 }
 

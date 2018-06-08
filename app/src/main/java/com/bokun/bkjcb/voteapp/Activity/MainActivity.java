@@ -8,17 +8,31 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.SPUtils;
+import com.bokun.bkjcb.voteapp.View.ScanView;
+import com.bumptech.glide.Glide;
 import com.mylhyl.zxing.scanner.common.Scanner;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
+    private TextView line;
+    private ScanView scanView;
+    private ImageView pic;
+    private TextView title;
+    private CardView history;
+    private long time;
 
 
     @Override
@@ -26,8 +40,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //扫一扫
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        scanView = findViewById(R.id.scan_view);
+        line = findViewById(R.id.line);
+        pic = findViewById(R.id.vote_history_background);
+        title = findViewById(R.id.vote_history_title);
+        history = findViewById(R.id.history);
+
+        scanView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
@@ -43,10 +62,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-        textView = findViewById(R.id.result);
-
+        pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String s = (String) SPUtils.get(MainActivity.this, "MatchKey", "");
+                VoteActivity.gotoVoteActivity(MainActivity.this, s);
+            }
+        });
     }
 
     @Override
@@ -54,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == BasicScannerActivity.REQUEST_CODE_SCANNER) {
             String s = data.getStringExtra(Scanner.Scan.RESULT);
-            textView.setText(s);
-            VoteActivity.gotoVoteActivity(this,s);
+            SPUtils.put(this, "MatchKey", s);
+            VoteActivity.gotoVoteActivity(this, s);
         }
     }
 
@@ -68,6 +90,42 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "无法打开相机", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        String url = (String) SPUtils.get(this, "MatchUrl", "");
+        String strTitle = (String) SPUtils.get(this, "MatchTitle", "");
+        if (!url.equals("")) {
+            Glide.with(this).load(url).into(pic);
+            title.setText(strTitle);
+        } else {
+            history.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        int y = scanView.getWidth() / 2;
+        Animation animation = new TranslateAnimation(0, 0, -y / 2, y / 2);
+        animation.setRepeatMode(Animation.REVERSE);
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.setDuration(2000);
+        animation.setInterpolator(new FastOutSlowInInterpolator());
+        line.setAnimation(animation);
+        animation.start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - time > 1000) {
+            time = System.currentTimeMillis();
+            Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+        } else {
+            finish();
         }
     }
 }

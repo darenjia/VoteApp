@@ -2,18 +2,21 @@ package com.bokun.bkjcb.voteapp.Activity;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,26 +24,40 @@ import android.widget.Toast;
 
 import com.bokun.bkjcb.voteapp.Event.MessageEvent;
 import com.bokun.bkjcb.voteapp.Fragment.VoteFragment;
+import com.bokun.bkjcb.voteapp.Interface.TextChanged;
 import com.bokun.bkjcb.voteapp.Model.HttpResult;
 import com.bokun.bkjcb.voteapp.Model.Match;
-import com.bokun.bkjcb.voteapp.Model.PersonInfo;
+import com.bokun.bkjcb.voteapp.Model.PersonResult;
 import com.bokun.bkjcb.voteapp.NetWork.HttpManager;
 import com.bokun.bkjcb.voteapp.NetWork.HttpRequestVo;
 import com.bokun.bkjcb.voteapp.NetWork.JsonParser;
 import com.bokun.bkjcb.voteapp.NetWork.RequestListener;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 import com.bokun.bkjcb.voteapp.Utils.SystemBarTintManager;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
+import com.bokun.bkjcb.voteapp.View.RankView;
+import com.bumptech.glide.Glide;
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.lzy.widget.HeaderViewPager;
-import com.rd.PageIndicatorView;
+
+import net.lucode.hackware.magicindicator.MagicIndicator;
+import net.lucode.hackware.magicindicator.ViewPagerHelper;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class VoteActivity extends BaseActivity implements RequestListener {
+public class VoteActivity extends BaseActivity implements RequestListener, TextChanged {
 
     private View toolbar;
 
@@ -55,6 +72,11 @@ public class VoteActivity extends BaseActivity implements RequestListener {
     private Match match;
     private View view;
     private TextView title;
+    private MagicIndicator indicator;
+    private NumberProgressBar progressBar;
+    private HashMap<String, String> scoreResult;
+    private Button submit;
+    private boolean isFinished = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +88,17 @@ public class VoteActivity extends BaseActivity implements RequestListener {
 
         view = findViewById(R.id.load_view);
         view.setVisibility(View.VISIBLE);
-        getlist("1");
+        String matchId = getIntent().getStringExtra(VOTE_ACTIVITY_KEY);
+        if (matchId == null || matchId.equals("")) {
+            Toast.makeText(this, "二维码扫描错误，请重试！", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        getList(matchId);
+        //getList("1");
     }
 
     private void initView() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setTranslucentStatus(true);
-        }
+        setTranslucentStatus(true);
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
         tintManager.setStatusBarTintResource(android.R.color.transparent);  //设置上方状态栏透明
@@ -93,12 +119,14 @@ public class VoteActivity extends BaseActivity implements RequestListener {
 
     private void initData() {
         title.setText(match.getTitle());
-
-
+        SPUtils.put(this, "MatchTitle", match.getTitle());
+        scoreResult = new HashMap<>();
         personInfos = match.getPerson();
         fragments = new ArrayList<>();
         for (int i = 0; i < personInfos.size(); i++) {
-            fragments.add(VoteFragment.newInstance(personInfos.get(i)));
+            VoteFragment fragment = VoteFragment.newInstance(personInfos.get(i));
+            fragment.setTextChanged(this);
+            fragments.add(fragment);
         }
         MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
@@ -109,12 +137,50 @@ public class VoteActivity extends BaseActivity implements RequestListener {
                 headerViewPager.setCurrentScrollableContainer(fragments.get(position));
             }
         });
+        CommonNavigator commonNavigator = new CommonNavigator(this);
+        commonNavigator.setAdapter(new CommonNavigatorAdapter() {
+
+            @Override
+            public int getCount() {
+                return fragments == null ? 0 : fragments.size();
+            }
+
+            @Override
+            public IPagerTitleView getTitleView(Context context, final int index) {
+                ColorTransitionPagerTitleView colorTransitionPagerTitleView = new ColorTransitionPagerTitleView(context);
+                colorTransitionPagerTitleView.setNormalColor(Color.GRAY);
+                colorTransitionPagerTitleView.setSelectedColor(Color.BLACK);
+                colorTransitionPagerTitleView.setText(personInfos.get(index).getPerson());
+                colorTransitionPagerTitleView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        pager.setCurrentItem(index);
+                    }
+                });
+                return colorTransitionPagerTitleView;
+            }
+
+            @Override
+            public IPagerIndicator getIndicator(Context context) {
+                LinePagerIndicator indicator = new LinePagerIndicator(context);
+                indicator.setMode(LinePagerIndicator.MODE_WRAP_CONTENT);
+                return indicator;
+            }
+        });
+        indicator.setNavigator(commonNavigator);
+        ViewPagerHelper.bind(indicator, pager);
+        match.setFilerurl("http://img.sccnn.com/bimg/339/04935.jpg");
+        Glide.with(this).load(match.getFilerurl()).into(pic);
+        SPUtils.put(this, "MatchUrl", match.getFilerurl());
+        // Glide.with(this).load().into(pic);
         //進度條消失
-     view.setVisibility(View.GONE);
+        view.setVisibility(View.GONE);
     }
 
     private void initViewPage() {
         pager = findViewById(R.id.content);
+        submit = findViewById(R.id.submit);
+        progressBar = findViewById(R.id.progress_bar);
         ImageView back = findViewById(R.id.back);
         title = findViewById(R.id.title);
         pic = findViewById(R.id.image_content);
@@ -130,8 +196,7 @@ public class VoteActivity extends BaseActivity implements RequestListener {
                 finish();
             }
         });
-        PageIndicatorView pageIndicatorView = findViewById(R.id.pageIndicatorView);
-        ImageView imageView = findViewById(R.id.image);
+        indicator = findViewById(R.id.magic_indicator);
         headerViewPager = findViewById(R.id.scrollableLayout);
         headerViewPager.setOnScrollListener(new HeaderViewPager.OnScrollListener() {
             @Override
@@ -145,6 +210,48 @@ public class VoteActivity extends BaseActivity implements RequestListener {
                 status_bar_fix.setAlpha(alpha);
             }
         });
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isFinished) {
+                    getResult();
+                } else {
+                    submitResult();
+                }
+            }
+        });
+    }
+
+    private void getResult() {
+        HttpRequestVo requestVo = new HttpRequestVo();
+        requestVo.requestDataMap.put("id", match.getPipeliningID());
+        requestVo.methodName = "Getscore ";
+        HttpManager manager = new HttpManager(this, this, requestVo);
+        manager.postRequest();
+    }
+
+    /**
+     * 提交评分结果
+     */
+    private void submitResult() {
+        StringBuilder strScore = new StringBuilder();
+        for (int i = 0; i < match.getPerson().size(); i++) {
+            String sc = scoreResult.get(match.getPerson().get(i).getPerson());
+            if (sc == null || sc.equals("")) {
+                pager.setCurrentItem(i);
+                Toast.makeText(this, "请先完成评分！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Log.i("VoteActivity", sc);
+            strScore.append(sc);
+        }
+        HttpRequestVo requestVo = new HttpRequestVo();
+        requestVo.requestDataMap.put("jid", (String) SPUtils.get(this, "UserID", ""));
+        requestVo.requestDataMap.put("actid", match.getId());
+        requestVo.requestDataMap.put("score", strScore.toString());
+        requestVo.methodName = "Addscore";
+        HttpManager manager = new HttpManager(this, this, requestVo);
+        manager.postRequest();
     }
 
     @Override
@@ -174,15 +281,43 @@ public class VoteActivity extends BaseActivity implements RequestListener {
 
     @Override
     protected void action(MessageEvent event) {
-        if(event.getType()== RequestListener.EVENT_GET_DATA_SUCCESS) {
-            //类型转换 转成 modal
-            match = JsonParser.getList(event.getResult().getData());
-            initData();
-        }else
-        {
-            Toast.makeText(VoteActivity.this,"操作失敗",Toast.LENGTH_SHORT).show();
+        if (event.getType() == RequestListener.EVENT_GET_DATA_SUCCESS) {
+            if (match == null) {
+                //类型转换 转成 modal
+                match = JsonParser.getList(event.getResult().getData());
+                initData();
+            } else if (!isFinished) {
+                Toast.makeText(this, "成功提交评分！", Toast.LENGTH_SHORT).show();
+                isFinished = true;
+                submit.setText("查看结果");
+                submit.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            } else {
+                List<PersonResult> results = JsonParser.getPersonResult(event.getResult().getData());
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setView(RankView.builder(this, results));
+                AlertDialog dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.show();
+
+            }
+        } else {
+            Toast.makeText(VoteActivity.this, "操作失敗", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    @Override
+    public void onTextChange(Match.PersonBean person, String score) {
+        if (scoreResult.get(person.getPerson()) == null) {
+            scoreResult.put(person.getPerson(), score);
+            progressBar.setProgress(progressBar.getProgress() + (100 / personInfos.size()));
+            if (progressBar.getProgress() == 100) {
+                progressBar.setVisibility(View.GONE);
+                submit.setVisibility(View.VISIBLE);
+            }
+        } else {
+            scoreResult.put(person.getPerson(), score);
+        }
     }
 
     class MyFragmentAdapter extends FragmentPagerAdapter {
@@ -203,7 +338,7 @@ public class VoteActivity extends BaseActivity implements RequestListener {
     }
 
 
-    private void getlist(String id) {
+    private void getList(String id) {
         HttpRequestVo requestVo = new HttpRequestVo();
         requestVo.requestDataMap.put("id", id);
         requestVo.methodName = "GetActivity";
