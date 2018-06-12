@@ -61,6 +61,11 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         name.setText(info.getPerson());
         infos.setText(info.getRemark());
         title.setText(info.getPtitle());
+        if(info.getScore()!="")
+        {
+            score.setText(info.getScore());
+            score.setEnabled(false);
+        }
 
         return view;
     }

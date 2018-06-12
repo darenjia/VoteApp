@@ -110,7 +110,7 @@ public class Match {
         this.judges = judges;
     }
 
-    public static class PersonBean implements Serializable{
+    public static class PersonBean implements Serializable {
         /**
          * id : 1527237915039
          * activit_id : a0838f0121f34a5d94f4adf3c3427eff

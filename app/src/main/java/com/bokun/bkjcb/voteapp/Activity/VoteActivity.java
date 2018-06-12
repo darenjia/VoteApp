@@ -119,10 +119,32 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
     }
 
     private void initData() {
+        String userid = (String) SPUtils.get(this, "UserID", "");
+        String[] scores = null;
+        for (int i = 0; i < match.getJudges().size(); i++) {
+            if (userid.equals(match.getJudges().get(i).getJudges_id())) {
+                if (match.getJudges().get(i).getScore() != "") {
+                    scores = match.getJudges().get(i).getScore().split(",");
+
+                    submit.setVisibility(View.VISIBLE);
+                    isFinished = true;
+                    submit.setText("查看结果");
+                    submit.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        }
+
+
         title.setText(match.getTitle());
         SPUtils.put(this, "MatchTitle", match.getTitle());
         scoreResult = new HashMap<>();
         personInfos = match.getPerson();
+        if (scores != null) {
+            for (int i = 0; i < scores.length; i++) {
+                personInfos.get(i).setScore(scores[i]);
+            }
+        }
         fragments = new ArrayList<>();
         for (int i = 0; i < personInfos.size(); i++) {
             VoteFragment fragment = VoteFragment.newInstance(personInfos.get(i));
@@ -293,12 +315,16 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 submit.setText("查看结果");
                 submit.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             } else {
-                List<PersonResult> results = JsonParser.getPersonResult(event.getResult().getData());
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setView(RankView.builder(this, results));
-                AlertDialog dialog = builder.create();
-                dialog.setCanceledOnTouchOutside(true);
-                dialog.show();
+                if (event.getResult().isSuccess()) {
+                    List<PersonResult> results = JsonParser.getPersonResult(event.getResult().getData());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setView(RankView.builder(this, results));
+                    AlertDialog dialog = builder.create();
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.show();
+                } else {
+                    Toast.makeText(VoteActivity.this, "结果尚未出来，请稍后再试！", Toast.LENGTH_SHORT).show();
+                }
             }
         } else {
             Toast.makeText(VoteActivity.this, "获取活动信息失败，请重试！", Toast.LENGTH_SHORT).show();
