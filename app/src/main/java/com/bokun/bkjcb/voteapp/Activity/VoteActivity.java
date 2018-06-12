@@ -77,6 +77,7 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
     private HashMap<String, String> scoreResult;
     private Button submit;
     private boolean isFinished = false;
+    private int finishedCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -310,14 +311,18 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
     public void onTextChange(Match.PersonBean person, String score) {
         if (scoreResult.get(person.getPerson()) == null) {
             scoreResult.put(person.getPerson(), score);
-            if(score==""){
-                progressBar.setProgress(progressBar.getProgress() + (100 / personInfos.size()));
-            }else {
-                progressBar.setProgress(progressBar.getProgress() - (100 / personInfos.size()));
+            if (score == "") {
+                finishedCount = finishedCount > 0 ? finishedCount-- : 0;
+            } else {
+                finishedCount++;
             }
+            progressBar.setProgress(finishedCount / personInfos.size());
             if (progressBar.getProgress() == 100) {
                 progressBar.setVisibility(View.GONE);
                 submit.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.VISIBLE);
+                submit.setVisibility(View.GONE);
             }
         } else {
             scoreResult.put(person.getPerson(), score);
