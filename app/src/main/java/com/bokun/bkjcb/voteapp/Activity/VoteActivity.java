@@ -310,7 +310,11 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
     public void onTextChange(Match.PersonBean person, String score) {
         if (scoreResult.get(person.getPerson()) == null) {
             scoreResult.put(person.getPerson(), score);
-            progressBar.setProgress(progressBar.getProgress() + (100 / personInfos.size()));
+            if(score==""){
+                progressBar.setProgress(progressBar.getProgress() + (100 / personInfos.size()));
+            }else {
+                progressBar.setProgress(progressBar.getProgress() - (100 / personInfos.size()));
+            }
             if (progressBar.getProgress() == 100) {
                 progressBar.setVisibility(View.GONE);
                 submit.setVisibility(View.VISIBLE);
