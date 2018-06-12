@@ -298,10 +298,10 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 AlertDialog dialog = builder.create();
                 dialog.setCanceledOnTouchOutside(true);
                 dialog.show();
-
             }
         } else {
-            Toast.makeText(VoteActivity.this, "操作失敗", Toast.LENGTH_SHORT).show();
+            Toast.makeText(VoteActivity.this, "获取活动信息失败，请重试！", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
     }

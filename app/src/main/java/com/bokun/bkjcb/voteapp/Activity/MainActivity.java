@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                             new String[]{Manifest.permission.CAMERA}, 60);
                 } else {
                     //权限已经被授予，在这里直接写要执行的相应方法即可
-                    ScannerActivity.gotoActivity(MainActivity.this, true, ScannerActivity.EXTRA_LASER_LINE_MODE_0, ScannerActivity.EXTRA_SCAN_MODE_0, false, false, false);
+                    ScannerActivity.gotoActivity(MainActivity.this, true, ScannerActivity.EXTRA_LASER_LINE_MODE_0, ScannerActivity.EXTRA_SCAN_MODE_1, false, false, false);
 //                    TestMainActivity.gotoActivity(MainActivity.this);
                 }
             }
