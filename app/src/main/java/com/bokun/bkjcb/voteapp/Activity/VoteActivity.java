@@ -257,7 +257,8 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
      * 提交评分结果
      */
     private void submitResult() {
-        StringBuilder strScore = new StringBuilder();
+      //  StringBuilder strScore = new StringBuilder();
+        String strScore="";
         for (int i = 0; i < match.getPerson().size(); i++) {
             String sc = scoreResult.get(match.getPerson().get(i).getPerson());
             if (sc == null || sc.equals("")) {
@@ -266,7 +267,15 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 return;
             }
             Log.i("VoteActivity", sc);
-            strScore.append(sc);
+           if(strScore=="")
+           {
+               strScore=sc;
+           }else
+           {
+               strScore+=","+sc;
+           }
+            Log.i("VoteActivity", strScore);
+          //  strScore.append(sc);
         }
         HttpRequestVo requestVo = new HttpRequestVo();
         requestVo.requestDataMap.put("jid", (String) SPUtils.get(this, "UserID", ""));
@@ -342,7 +351,7 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
             } else {
                 finishedCount++;
             }
-            progressBar.setProgress(finishedCount / personInfos.size());
+            progressBar.setProgress(finishedCount / personInfos.size()*100);
             if (progressBar.getProgress() == 100) {
                 progressBar.setVisibility(View.GONE);
                 submit.setVisibility(View.VISIBLE);
