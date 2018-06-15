@@ -74,7 +74,6 @@ public class JsonParser {
     }
 
     public static List<PersonResult> getPersonResult(String str) {
-        Log.i("str",str);
         List<PersonResult> persons = new ArrayList<>();
         com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
         JsonArray array = parser.parse(str).getAsJsonArray();
