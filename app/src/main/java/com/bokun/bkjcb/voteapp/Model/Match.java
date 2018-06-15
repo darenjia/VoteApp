@@ -7,16 +7,16 @@ public class Match {
 
 
     /**
-     * id : a0838f0121f34a5d94f4adf3c3427eff
-     * PipeliningID : 2
-     * title : 六一儿童节123
-     * content : 关于儿童
-     * holddate : 2018/5/28
-     * remark : 关于儿童
-     * filerurl : 12
+     * id : 94607fe5019f443a9d8e12d3718a00ed
+     * PipeliningID : 14
+     * title : 123
+     * content : 123
+     * holddate : 2018/6/15
+     * remark :
+     * filerurl :
      * iscompelete : 0
-     * person : [{"id":"1527237915039","activit_id":"a0838f0121f34a5d94f4adf3c3427eff","person":"张亮","ptitle":"关爱儿童们","remark":"男 25","score":""},{"id":"1527237954854","activit_id":"a0838f0121f34a5d94f4adf3c3427eff","person":"王璐","ptitle":"关注儿童疾病","remark":"女 20","score":""}]
-     * judges : [{"id":"14","judgesname":"李柏","activit_id":"a0838f0121f34a5d94f4adf3c3427eff","judges_id":"1","score":"5958"},{"id":"15","judgesname":"张亮","activit_id":"a0838f0121f34a5d94f4adf3c3427eff","judges_id":"2","score":""},{"id":"16","judgesname":"望江","activit_id":"a0838f0121f34a5d94f4adf3c3427eff","judges_id":"3","score":""}]
+     * person : [{"id":"1529049333490","activit_id":"94607fe5019f443a9d8e12d3718a00ed","person":"巴奴","sex":"男","age":"30","position":"职员","ptitle":"阿萨德","remark":"","score":"","fileurl":""},{"id":"1529047806970","activit_id":"94607fe5019f443a9d8e12d3718a00ed","person":"刘欢","sex":"男","age":"26","position":"职员","ptitle":"123","remark":"","score":"","fileurl":"/UpLoad/Headportrait/20183015033017099.png"}]
+     * judges : [{"id":"24","judgesname":"李柏","activit_id":"94607fe5019f443a9d8e12d3718a00ed","judges_id":"1","score":""}]
      */
 
     private String id;
@@ -112,20 +112,28 @@ public class Match {
 
     public static class PersonBean implements Serializable {
         /**
-         * id : 1527237915039
-         * activit_id : a0838f0121f34a5d94f4adf3c3427eff
-         * person : 张亮
-         * ptitle : 关爱儿童们
-         * remark : 男 25
+         * id : 1529049333490
+         * activit_id : 94607fe5019f443a9d8e12d3718a00ed
+         * person : 巴奴
+         * sex : 男
+         * age : 30
+         * position : 职员
+         * ptitle : 阿萨德
+         * remark :
          * score :
+         * fileurl :
          */
 
         private String id;
         private String activit_id;
         private String person;
+        private String sex;
+        private String age;
+        private String position;
         private String ptitle;
         private String remark;
         private String score;
+        private String fileurl;
 
         public String getId() {
             return id;
@@ -151,6 +159,30 @@ public class Match {
             this.person = person;
         }
 
+        public String getSex() {
+            return sex;
+        }
+
+        public void setSex(String sex) {
+            this.sex = sex;
+        }
+
+        public String getAge() {
+            return age;
+        }
+
+        public void setAge(String age) {
+            this.age = age;
+        }
+
+        public String getPosition() {
+            return position;
+        }
+
+        public void setPosition(String position) {
+            this.position = position;
+        }
+
         public String getPtitle() {
             return ptitle;
         }
@@ -174,15 +206,23 @@ public class Match {
         public void setScore(String score) {
             this.score = score;
         }
+
+        public String getFileurl() {
+            return fileurl;
+        }
+
+        public void setFileurl(String fileurl) {
+            this.fileurl = fileurl;
+        }
     }
 
     public static class JudgesBean {
         /**
-         * id : 14
+         * id : 24
          * judgesname : 李柏
-         * activit_id : a0838f0121f34a5d94f4adf3c3427eff
+         * activit_id : 94607fe5019f443a9d8e12d3718a00ed
          * judges_id : 1
-         * score : 5958
+         * score :
          */
 
         private String id;

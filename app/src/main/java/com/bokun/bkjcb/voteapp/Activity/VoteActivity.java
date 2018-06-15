@@ -259,8 +259,7 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
      * 提交评分结果
      */
     private void submitResult() {
-      //  StringBuilder strScore = new StringBuilder();
-        String strScore="";
+        StringBuilder strScore = new StringBuilder();
         for (int i = 0; i < match.getPerson().size(); i++) {
             String sc = scoreResult.get(match.getPerson().get(i).getPerson());
             if (sc == null || sc.equals("")) {
@@ -269,14 +268,12 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 return;
             }
             Log.i("VoteActivity", sc);
-           if(strScore=="")
-           {
-               strScore=sc;
-           }else
-           {
-               strScore+=","+sc;
-           }
-            Log.i("VoteActivity", strScore);
+            if (i==0){
+                strScore.append(sc);
+            }else {
+                strScore.append(",").append(sc);
+            }
+            //Log.i("VoteActivity", strScore);
           //  strScore.append(sc);
         }
         HttpRequestVo requestVo = new HttpRequestVo();
