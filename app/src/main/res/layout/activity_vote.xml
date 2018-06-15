@@ -23,9 +23,9 @@
             <ImageView
                 android:id="@+id/image_content"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="250dp"
                 android:contentDescription="@string/app_name"
-                android:scaleType="fitXY"
+                android:scaleType="centerCrop"
                 android:src="@drawable/bg" />
 
             <net.lucode.hackware.magicindicator.MagicIndicator

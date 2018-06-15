@@ -33,6 +33,7 @@ import com.bokun.bkjcb.voteapp.NetWork.HttpRequestVo;
 import com.bokun.bkjcb.voteapp.NetWork.JsonParser;
 import com.bokun.bkjcb.voteapp.NetWork.RequestListener;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 import com.bokun.bkjcb.voteapp.Utils.SystemBarTintManager;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
@@ -192,10 +193,11 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
         });
         indicator.setNavigator(commonNavigator);
         ViewPagerHelper.bind(indicator, pager);
-        match.setFilerurl("http://img.sccnn.com/bimg/339/04935.jpg");
-        Glide.with(this).load(match.getFilerurl()).into(pic);
+       // match.setFilerurl("http://img.sccnn.com/bimg/339/04935.jpg");
+        Log.i("url",match.getFilerurl());
+        Glide.with(this).load(Constants.imgurl+ match.getFilerurl()).into(pic);
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
-        // Glide.with(this).load().into(pic);
+      //  Glide.with(this).load().into(pic);
         //進度條消失
         view.setVisibility(View.GONE);
     }

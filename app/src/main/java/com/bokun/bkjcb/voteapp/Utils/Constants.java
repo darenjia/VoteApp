@@ -28,6 +28,7 @@ public class Constants {
     * 测试IP地址
     * */
     public static String TEST_HTTPURL = "http://192.168.100.4:2333/WebService.asmx";
+    public static String imgurl = "http://192.168.100.4:2333";
     /*  public static String FTP_HOST_DEFAULT = "192.168.100.136";
       public static final int FTP_HOST_PORT = 18000;
       public static final String FTP_USER_DEFAULT = "zgzx1";
