@@ -5,24 +5,26 @@
     android:maxHeight="600dp"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="活动结果"
+        android:textColor="@color/textColor"
+        android:textSize="20sp" />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="活动结果"
-                android:textColor="@color/textColor"
-                android:textSize="20sp" />
+
 
             <LinearLayout
                 android:id="@+id/result_view"

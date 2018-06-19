@@ -10,7 +10,8 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:src="@drawable/first" />
+        android:minHeight="20dp"
+         />
 
     <TextView
         android:id="@+id/rank_name"
