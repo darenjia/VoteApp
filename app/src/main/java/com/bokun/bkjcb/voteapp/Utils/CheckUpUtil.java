@@ -2,6 +2,10 @@ package com.bokun.bkjcb.voteapp.Utils;
 
 import android.content.Context;
 
+import com.bokun.bkjcb.voteapp.Model.HttpResult;
+import com.bokun.bkjcb.voteapp.Model.VersionInfo;
+import com.bokun.bkjcb.voteapp.NetWork.JsonParser;
+
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -25,7 +29,7 @@ import ezy.boost.update.UpdateManager;
 
 public class CheckUpUtil {
     private Context context;
-    private String mCheckUrl = "";
+    private String mCheckUrl = Constants.TEST_HTTPURL;
     private String mUpdateUrl = Constants.URL_SOFT;
 
     public CheckUpUtil(Context context) {
@@ -39,7 +43,7 @@ public class CheckUpUtil {
         check(isManual, true, false, false, false, 998, isAutoInstall);
     }
 
-    void check(boolean isManual, boolean hasUpdate, final boolean isForce, final boolean isSilent, final boolean isIgnorable, final int
+    void check(boolean isManual, final boolean hasUpdate, final boolean isForce, final boolean isSilent, final boolean isIgnorable, final int
             notifyId, final boolean isAutoInstall) {
         UpdateManager.create(context).setUrl(mCheckUrl).setChecker(new IUpdateChecker() {
             @Override
@@ -64,8 +68,8 @@ public class CheckUpUtil {
                 }*/
                 HttpTransportSE ht;
                 try {
-                    String NAMESPACE = "http://zgzxjk/";
-                    String METHOD_NAME = "Banbenhao";
+                    String NAMESPACE = "http://votejk/";
+                    String METHOD_NAME = "Getedition";
                     String URL = url;
                     // 新建 SoapObject 对象
                     SoapObject rpc = new SoapObject(NAMESPACE, METHOD_NAME);
@@ -81,8 +85,9 @@ public class CheckUpUtil {
                     // 获取返回结果
                     SoapObject result = (SoapObject) envelope.bodyIn;
                     if (result != null) {
-                        if (true) {
-                            agent.setInfo("");
+                        HttpResult httpResult = JsonParser.getData(result);
+                        if (httpResult.isSuccess()) {
+                            agent.setInfo(httpResult.getData());
                         } else {
                             agent.setError(new UpdateError(UpdateError.CHECK_UNKNOWN, ""));
                         }
@@ -103,15 +108,16 @@ public class CheckUpUtil {
         }).setManual(isManual).setNotifyId(notifyId).setParser(new IUpdateParser() {
             @Override
             public UpdateInfo parse(String source) throws Exception {
-                String[] data = source.split(";");
+                LogUtil.logI(source);
+                VersionInfo version = JsonParser.getVersionResult(source);
                 UpdateInfo info = new UpdateInfo();
-                info.hasUpdate = !Utils.getVersion(context).equals(data[0]);
-                info.updateContent = data[3];
+                info.hasUpdate = !Utils.getVersion(context).equals(version.getEdition());
+                info.updateContent = version.getRemark();
 //                info.versionCode = 587;
-                info.versionName = "v" + data[0];
+                info.versionName = version.getEdition();
                 info.url = mUpdateUrl;
-                info.md5 = data[1];
-                info.size = Long.parseLong(data[2]);
+                info.md5 = version.getMd5();
+                info.size = Long.parseLong(version.getSize());
                 info.isForce = isForce;
                 info.isIgnorable = isIgnorable;
                 info.isSilent = isSilent;

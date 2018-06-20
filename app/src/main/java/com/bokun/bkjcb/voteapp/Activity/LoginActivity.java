@@ -21,6 +21,7 @@ import com.bokun.bkjcb.voteapp.NetWork.HttpRequestVo;
 import com.bokun.bkjcb.voteapp.NetWork.JsonParser;
 import com.bokun.bkjcb.voteapp.NetWork.RequestListener;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.CheckUpUtil;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,7 +42,7 @@ public class LoginActivity extends BaseActivity implements RequestListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //new CheckUpUtil(LoginActivity.this).checkUpadte(true,false);
+        new CheckUpUtil(LoginActivity.this).checkUpadte(true,false);
         mEmailView = (EditText) findViewById(R.id.username);
 
         mPasswordView = (EditText) findViewById(R.id.password);

@@ -390,20 +390,24 @@ public class Utils {
         return statusHeight;
     }
 
-    public static Drawable getRandomImage(Context context) {
-        int[] drawables = {R.drawable.person1,
-                R.drawable.person2,
-                R.drawable.person3,
-                R.drawable.person4,
-                R.drawable.person5,
-                R.drawable.person6,
-                R.drawable.person7,
-                R.drawable.person8,
-                R.drawable.person9,
-                R.drawable.person10
+    public static Drawable getRandomImage(Context context, String sex) {
+        int[] man_img = {
+                R.drawable.man1,
+                R.drawable.man2
         };
+        int[] woman_img = {
+                R.drawable.man1,
+                R.drawable.man2
+        };
+        int[] drawables;
         Random random = new Random();
-        return context.getResources().getDrawable(drawables[random.nextInt(9)]);
+        if (sex.equals("女")) {
+            drawables = woman_img;
+        } else {
+            drawables = man_img;
+        }
+        return context.getResources().getDrawable(drawables[random.nextInt(1)]);
     }
+
 }
 

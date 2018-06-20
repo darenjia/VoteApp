@@ -6,6 +6,7 @@ import com.bokun.bkjcb.voteapp.Model.HttpResult;
 import com.bokun.bkjcb.voteapp.Model.Match;
 import com.bokun.bkjcb.voteapp.Model.PersonInfo;
 import com.bokun.bkjcb.voteapp.Model.PersonResult;
+import com.bokun.bkjcb.voteapp.Model.VersionInfo;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -84,5 +85,17 @@ public class JsonParser {
         }
 
         return persons;
+    }
+
+    public static VersionInfo getVersionResult(String str) {
+        VersionInfo result = new VersionInfo();
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(str).getAsJsonArray();
+        for (JsonElement element : array) {
+            Gson gson = new Gson();
+            result = gson.fromJson(element, VersionInfo.class);
+        }
+
+        return result;
     }
 }

@@ -15,10 +15,10 @@ import android.widget.TextView;
 import com.bokun.bkjcb.voteapp.Interface.TextChanged;
 import com.bokun.bkjcb.voteapp.Model.Match;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
+import com.bumptech.glide.Glide;
 import com.lzy.widget.HeaderScrollHelper;
-
-import java.util.Objects;
 
 /**
  * Created by DengShuai on 2018/6/4.
@@ -56,17 +56,24 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         TextView name = view.findViewById(R.id.detail_name);
         TextView infos = view.findViewById(R.id.detail_info);
         TextView title = view.findViewById(R.id.detail_title);
+        TextView age = view.findViewById(R.id.detail_age);
+        TextView position = view.findViewById(R.id.detail_position);
         score = view.findViewById(R.id.detail_score);
-        img.setImageDrawable(Utils.getRandomImage(Objects.requireNonNull(getContext())));
+
         name.setText(info.getPerson());
         infos.setText(info.getRemark());
         title.setText(info.getPtitle());
-        if(info.getScore()!="")
-        {
+        age.setText(info.getAge());
+        position.setText(info.getPosition());
+        if (info.getScore() != "") {
             score.setText(info.getScore());
             score.setEnabled(false);
         }
-
+        if (info.getFileurl().equals("")) {
+            img.setImageDrawable(Utils.getRandomImage(getContext(), info.getSex()));
+        } else {
+            Glide.with(getContext()).load(Constants.imgurl + info.getFileurl()).into(img);
+        }
         return view;
     }
 
