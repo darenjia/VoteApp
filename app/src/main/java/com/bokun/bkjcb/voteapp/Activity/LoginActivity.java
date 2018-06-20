@@ -71,6 +71,12 @@ public class LoginActivity extends BaseActivity implements RequestListener {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        //显示上次记录的用户名
+        String name= (String) SPUtils.get(this, "UserName","");
+        if(name!="")
+        {
+            mEmailView.setText(name);
+        }
     }
 
 
@@ -123,6 +129,8 @@ public class LoginActivity extends BaseActivity implements RequestListener {
         if (event.getType() == RequestListener.EVENT_GET_DATA_SUCCESS && event.getResult().isSuccess()) {
             SPUtils.put(this, "UserID", JsonParser.getPerson(event.getResult().getData()).getId());
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            //保存用户名
+            SPUtils.put(this, "UserName", JsonParser.getPerson(event.getResult().getData()).getUsername());
             startActivity(intent);
             finish();
         } else {

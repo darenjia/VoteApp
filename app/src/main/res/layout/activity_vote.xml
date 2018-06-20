@@ -26,7 +26,7 @@
                 android:layout_height="250dp"
                 android:contentDescription="@string/app_name"
                 android:scaleType="centerCrop"
-                android:src="@drawable/bg" />
+              />
 
             <net.lucode.hackware.magicindicator.MagicIndicator
                 android:id="@+id/magic_indicator"
@@ -47,7 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:padding="10dp"
+        android:background="@color/textColor"
         android:orientation="vertical">
+
         <com.daimajia.numberprogressbar.NumberProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"

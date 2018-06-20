@@ -195,20 +195,14 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
         });
         indicator.setNavigator(commonNavigator);
         ViewPagerHelper.bind(indicator, pager);
-<<<<<<< Updated upstream
-        // match.setFilerurl("http://img.sccnn.com/bimg/339/04935.jpg");
-        Log.i("url", match.getFilerurl());
-        Glide.with(this).load(Constants.imgurl + match.getFilerurl()).into(pic);
-=======
-       // match.setFilerurl("http://img.sccnn.com/bimg/339/04935.jpg");
-        Log.i("url",match.getFilerurl());
+
 
         options = new RequestOptions().placeholder(R.drawable.green).error(R.drawable.green);
 
 
         Glide.with(this).load(Constants.imgurl+ match.getFilerurl()).apply(options).into(pic);//图片加载出来前，显示的图片
 
->>>>>>> Stashed changes
+
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
         //  Glide.with(this).load().into(pic);
         //進度條消失

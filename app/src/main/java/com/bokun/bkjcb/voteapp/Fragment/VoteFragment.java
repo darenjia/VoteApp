@@ -18,6 +18,7 @@ import com.bokun.bkjcb.voteapp.R;
 import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.lzy.widget.HeaderScrollHelper;
 
 /**
@@ -49,6 +50,9 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        RequestOptions options = new RequestOptions().placeholder(R.drawable.man1).error(R.drawable.man1);
+
         info = (Match.PersonBean) getArguments().getSerializable("Key");
         view = inflater.inflate(R.layout.detail_view, container, false);
         //初始化详情视图
@@ -72,7 +76,7 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         if (info.getFileurl().equals("")) {
             img.setImageDrawable(Utils.getRandomImage(getContext(), info.getSex()));
         } else {
-            Glide.with(getContext()).load(Constants.imgurl + info.getFileurl()).into(img);
+            Glide.with(getContext()).load(Constants.imgurl + info.getFileurl()).apply(options).into(img);
         }
         return view;
     }
