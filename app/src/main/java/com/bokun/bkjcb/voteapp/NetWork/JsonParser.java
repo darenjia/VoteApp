@@ -90,11 +90,10 @@ public class JsonParser {
     public static VersionInfo getVersionResult(String str) {
         VersionInfo result = new VersionInfo();
         com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
-        JsonArray array = parser.parse(str).getAsJsonArray();
-        for (JsonElement element : array) {
-            Gson gson = new Gson();
-            result = gson.fromJson(element, VersionInfo.class);
-        }
+        JsonElement element = parser.parse(str).getAsJsonObject();
+
+        Gson gson = new Gson();
+        result = gson.fromJson(element, VersionInfo.class);
 
         return result;
     }
