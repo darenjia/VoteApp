@@ -193,11 +193,11 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
         });
         indicator.setNavigator(commonNavigator);
         ViewPagerHelper.bind(indicator, pager);
-       // match.setFilerurl("http://img.sccnn.com/bimg/339/04935.jpg");
-        Log.i("url",match.getFilerurl());
-        Glide.with(this).load(Constants.imgurl+ match.getFilerurl()).into(pic);
+        // match.setFilerurl("http://img.sccnn.com/bimg/339/04935.jpg");
+        Log.i("url", match.getFilerurl());
+        Glide.with(this).load(Constants.imgurl + match.getFilerurl()).into(pic);
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
-      //  Glide.with(this).load().into(pic);
+        //  Glide.with(this).load().into(pic);
         //進度條消失
         view.setVisibility(View.GONE);
     }
@@ -261,20 +261,20 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
     private void submitResult() {
         StringBuilder strScore = new StringBuilder();
         for (int i = 0; i < match.getPerson().size(); i++) {
-            String sc = scoreResult.get(match.getPerson().get(i).getPerson());
+            String sc = scoreResult.get(match.getPerson().get(i).getId());
             if (sc == null || sc.equals("")) {
                 pager.setCurrentItem(i);
                 Toast.makeText(this, "请先完成评分！", Toast.LENGTH_SHORT).show();
                 return;
             }
             Log.i("VoteActivity", sc);
-            if (i==0){
+            if (i == 0) {
                 strScore.append(sc);
-            }else {
+            } else {
                 strScore.append(",").append(sc);
             }
             //Log.i("VoteActivity", strScore);
-          //  strScore.append(sc);
+            //  strScore.append(sc);
         }
         HttpRequestVo requestVo = new HttpRequestVo();
         requestVo.requestDataMap.put("jid", (String) SPUtils.get(this, "UserID", ""));
@@ -343,14 +343,14 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
 
     @Override
     public void onTextChange(Match.PersonBean person, String score) {
-        if (scoreResult.get(person.getPerson()) == null) {
-            scoreResult.put(person.getPerson(), score);
+        if (scoreResult.get(person.getId()) == null) {
+            scoreResult.put(person.getId(), score);
             if (score == "") {
                 finishedCount = finishedCount > 0 ? finishedCount-- : 0;
             } else {
                 finishedCount++;
             }
-            progressBar.setProgress(finishedCount / personInfos.size()*100);
+            progressBar.setProgress(finishedCount * 100 / personInfos.size());
             if (progressBar.getProgress() == 100) {
                 progressBar.setVisibility(View.GONE);
                 submit.setVisibility(View.VISIBLE);
@@ -359,7 +359,7 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 submit.setVisibility(View.GONE);
             }
         } else {
-            scoreResult.put(person.getPerson(), score);
+            scoreResult.put(person.getId(), score);
         }
     }
 
