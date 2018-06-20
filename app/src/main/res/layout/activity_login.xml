@@ -32,29 +32,52 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/username"
-                android:drawableLeft="@drawable/user"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:ems="10"
-                android:hint="用户名"
-                android:inputType="textEmailAddress"
-                android:text="libai" />
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/password"
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/user" />
+
+                <EditText
+                    android:id="@+id/username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="用户名"
+                    android:inputType="textEmailAddress"
+                    android:paddingLeft="10dp"
+                    android:text="libai" />
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/pass"
-                android:ems="10"
-                android:paddingLeft="10dp"
-                android:hint="密码"
-                android:imeActionId="@+id/login"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:inputType="textPassword"
-                android:text="123" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/pass" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="密码"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:inputType="textPassword"
+                    android:paddingLeft="10dp"
+                    android:text="123" />
+            </LinearLayout>
+
 
             <Button
                 android:id="@+id/email_sign_in_button"
