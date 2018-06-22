@@ -32,7 +32,7 @@ public class RankView {
 //           R.drawable.ten
     };
 
-    public static View builder(Context context, List<PersonResult> list) {
+    public static View builder(Context context, List<PersonResult.Person> list) {
         View view = View.inflate(context, R.layout.rank_view, null);
         LinearLayout layout = view.findViewById(R.id.result_view);
 

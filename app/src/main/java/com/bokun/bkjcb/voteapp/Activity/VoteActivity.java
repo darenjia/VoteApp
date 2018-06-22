@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -22,16 +21,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bokun.bkjcb.voteapp.Event.MessageEvent;
 import com.bokun.bkjcb.voteapp.Fragment.VoteFragment;
+import com.bokun.bkjcb.voteapp.HttpService.MatchService;
 import com.bokun.bkjcb.voteapp.Interface.TextChanged;
 import com.bokun.bkjcb.voteapp.Model.HttpResult;
-import com.bokun.bkjcb.voteapp.Model.Match;
+import com.bokun.bkjcb.voteapp.Model.MatchResult;
 import com.bokun.bkjcb.voteapp.Model.PersonResult;
-import com.bokun.bkjcb.voteapp.NetWork.HttpManager;
-import com.bokun.bkjcb.voteapp.NetWork.HttpRequestVo;
-import com.bokun.bkjcb.voteapp.NetWork.JsonParser;
-import com.bokun.bkjcb.voteapp.NetWork.RequestListener;
 import com.bokun.bkjcb.voteapp.R;
 import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
@@ -52,26 +47,27 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTit
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.WrapPagerIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
 
-import org.greenrobot.eventbus.EventBus;
-import org.ksoap2.serialization.SoapObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class VoteActivity extends BaseActivity implements RequestListener, TextChanged {
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+public class VoteActivity extends BaseActivity implements TextChanged {
 
     private View toolbar;
 
     public static final String VOTE_ACTIVITY_KEY = "key";
     private HeaderViewPager headerViewPager;
-    private List<Match.PersonBean> personInfos;
+    private List<MatchResult.Data.Person> personInfos;
     private ViewPager pager;
     private ArrayList<VoteFragment> fragments;
     private View titleBar_Bg;
     private View status_bar_fix;
     private ImageView pic;
-    private Match match;
+    private MatchResult.Data match;
     private View view;
     private TextView title;
     private MagicIndicator indicator;
@@ -81,6 +77,7 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
     private boolean isFinished = false;
     private int finishedCount = 0;
     private RequestOptions options;
+    private MatchService matchService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,14 +118,14 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
         win.setAttributes(winParams);
     }
 
-    private void initData() {
+    private void initData(MatchResult result) {
+        match = result.getData();
         String userid = (String) SPUtils.get(this, "UserID", "");
         String[] scores = null;
         for (int i = 0; i < match.getJudges().size(); i++) {
             if (userid.equals(match.getJudges().get(i).getJudges_id())) {
                 if (match.getJudges().get(i).getScore() != "") {
                     scores = match.getJudges().get(i).getScore().split(",");
-
                     submit.setVisibility(View.VISIBLE);
                     isFinished = true;
                     submit.setText("查看结果");
@@ -137,7 +134,6 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 }
             }
         }
-
 
         title.setText(match.getTitle());
         SPUtils.put(this, "MatchTitle", match.getTitle());
@@ -164,13 +160,14 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
             }
         });
         options = new RequestOptions().placeholder(R.drawable.green).error(R.drawable.green);
-        Glide.with(this).load(Constants.imgurl+ match.getFilerurl()).apply(options).into(pic);//图片加载出来前，显示的图片
+        Glide.with(this).load(Constants.imgurl + match.getFilerurl()).apply(options).into(pic);//图片加载出来前，显示的图片
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
         //  Glide.with(this).load().into(pic);
         initMagicIndicator();
         //進度條消失
         view.setVisibility(View.GONE);
     }
+
     private void initMagicIndicator() {
 
         CommonNavigator commonNavigator = new CommonNavigator(this);
@@ -208,6 +205,7 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
         ViewPagerHelper.bind(indicator, pager);
 
     }
+
     private void initViewPage() {
         pager = findViewById(R.id.content);
         submit = findViewById(R.id.submit);
@@ -254,11 +252,28 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
     }
 
     private void getResult() {
-        HttpRequestVo requestVo = new HttpRequestVo();
-        requestVo.requestDataMap.put("id", match.getPipeliningID());
-        requestVo.methodName = "Getscore ";
-        HttpManager manager = new HttpManager(this, this, requestVo);
-        manager.postRequest();
+        disposable.dispose();
+        disposable = matchService.getResult(match.getPipeliningID())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<PersonResult>() {
+                    @Override
+                    public void accept(PersonResult result) throws Exception {
+                        if (result.isSuccess()) {
+                            showResult(result.getData());
+                        } else {
+                            Toast.makeText(VoteActivity.this, "结果尚未出来，请稍后再试！", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void showResult(List<PersonResult.Person> persons) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(RankView.builder(this, persons));
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
     }
 
     /**
@@ -273,22 +288,28 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 Toast.makeText(this, "请先完成评分！", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Log.i("VoteActivity", sc);
             if (i == 0) {
                 strScore.append(sc);
             } else {
                 strScore.append(",").append(sc);
             }
-            //Log.i("VoteActivity", strScore);
-            //  strScore.append(sc);
         }
-        HttpRequestVo requestVo = new HttpRequestVo();
-        requestVo.requestDataMap.put("jid", (String) SPUtils.get(this, "UserID", ""));
-        requestVo.requestDataMap.put("actid", match.getId());
-        requestVo.requestDataMap.put("score", strScore.toString());
-        requestVo.methodName = "Addscore";
-        HttpManager manager = new HttpManager(this, this, requestVo);
-        manager.postRequest();
+        disposable = matchService.submitScore((String) SPUtils.get(this, "UserID", ""), match.getId(), strScore.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<HttpResult>() {
+                    @Override
+                    public void accept(HttpResult result) throws Exception {
+                        if (result.isSuccess()) {
+                            Toast.makeText(VoteActivity.this, "成功提交评分！", Toast.LENGTH_SHORT).show();
+                            isFinished = true;
+                            submit.setText("查看结果");
+                            submit.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        } else {
+                            Toast.makeText(VoteActivity.this, "提交失败，请重试！", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     @Override
@@ -304,51 +325,9 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
         activity.startActivity(intent);
     }
 
-    //回调方法
-    @Override
-    public void action(int i, Object object) {
-        HttpResult result = null;
-        if (i == RequestListener.EVENT_GET_DATA_SUCCESS) {
-            result = JsonParser.getData((SoapObject) object);
-            // Log.i("11", result.getData());
-        }
-        EventBus.getDefault().post(new MessageEvent(i, result));
-
-    }
 
     @Override
-    protected void action(MessageEvent event) {
-        if (event.getType() == RequestListener.EVENT_GET_DATA_SUCCESS) {
-            if (match == null) {
-                //类型转换 转成 modal
-                match = JsonParser.getList(event.getResult().getData());
-                initData();
-            } else if (!isFinished) {
-                Toast.makeText(this, "成功提交评分！", Toast.LENGTH_SHORT).show();
-                isFinished = true;
-                submit.setText("查看结果");
-                submit.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-            } else {
-                if (event.getResult().isSuccess()) {
-                    List<PersonResult> results = JsonParser.getPersonResult(event.getResult().getData());
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setView(RankView.builder(this, results));
-                    AlertDialog dialog = builder.create();
-                    dialog.setCanceledOnTouchOutside(true);
-                    dialog.show();
-                } else {
-                    Toast.makeText(VoteActivity.this, "结果尚未出来，请稍后再试！", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else {
-            Toast.makeText(VoteActivity.this, "获取活动信息失败，请重试！", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-    }
-
-    @Override
-    public void onTextChange(Match.PersonBean person, String score) {
+    public void onTextChange(MatchResult.Data.Person person, String score) {
         if (scoreResult.get(person.getId()) == null) {
             scoreResult.put(person.getId(), score);
             if (score == "") {
@@ -388,11 +367,21 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
 
 
     private void getList(String id) {
-        HttpRequestVo requestVo = new HttpRequestVo();
-        requestVo.requestDataMap.put("id", id);
-        requestVo.methodName = "GetActivity";
-        HttpManager manager = new HttpManager(VoteActivity.this, VoteActivity.this, requestVo);
-        manager.postRequest();
+        matchService = retrofit.create(MatchService.class);
+        disposable = matchService.getMatch(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<MatchResult>() {
+                    @Override
+                    public void accept(MatchResult result) throws Exception {
+                        if (result != null && result.isSuccess()) {
+                            initData(result);
+                        } else {
+                            Toast.makeText(VoteActivity.this, "获取活动信息失败，请重试！", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                });
     }
 
 }

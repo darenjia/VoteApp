@@ -2,34 +2,30 @@ package com.bokun.bkjcb.voteapp.Activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.bokun.bkjcb.voteapp.Event.MessageEvent;
-import com.bokun.bkjcb.voteapp.Model.HttpResult;
-import com.bokun.bkjcb.voteapp.NetWork.HttpManager;
-import com.bokun.bkjcb.voteapp.NetWork.HttpRequestVo;
-import com.bokun.bkjcb.voteapp.NetWork.JsonParser;
-import com.bokun.bkjcb.voteapp.NetWork.RequestListener;
+import com.bokun.bkjcb.voteapp.HttpService.UserService;
+import com.bokun.bkjcb.voteapp.Model.UserResult;
 import com.bokun.bkjcb.voteapp.R;
 import com.bokun.bkjcb.voteapp.Utils.CheckUpUtil;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 
-import org.greenrobot.eventbus.EventBus;
-import org.ksoap2.serialization.SoapObject;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
-public class LoginActivity extends BaseActivity implements RequestListener {
+public class LoginActivity extends BaseActivity {
 
 
-    // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
@@ -43,21 +39,10 @@ public class LoginActivity extends BaseActivity implements RequestListener {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("登录");
         setSupportActionBar(toolbar);
-        new CheckUpUtil(LoginActivity.this).checkUpadte(true,false);
+        new CheckUpUtil(LoginActivity.this).checkUpadte(true, false);
         mEmailView = (EditText) findViewById(R.id.username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
-//        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-//                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-//                    attemptLogin();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-
 
         //给按钮添加点击事件
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
@@ -73,9 +58,8 @@ public class LoginActivity extends BaseActivity implements RequestListener {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         //显示上次记录的用户名
-        String name= (String) SPUtils.get(this, "UserName","");
-        if(name!="")
-        {
+        String name = (String) SPUtils.get(this, "UserName", "");
+        if (name != "") {
             mEmailView.setText(name);
         }
     }
@@ -83,7 +67,10 @@ public class LoginActivity extends BaseActivity implements RequestListener {
 
     //判断登陆方法
     private void attemptLogin() {
-
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(mLoginFormView.getWindowToken(), 0);
+        }
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
@@ -114,41 +101,23 @@ public class LoginActivity extends BaseActivity implements RequestListener {
         }
     }
 
-    @Override
-    public void action(int i, Object object) {
-        HttpResult result = null;
-        if (i == RequestListener.EVENT_GET_DATA_SUCCESS) {
-            result = JsonParser.getData((SoapObject) object);
-        }
-        EventBus.getDefault().post(new MessageEvent(i, result));
-
-    }
-
-    @Override
-    protected void action(MessageEvent event) {
-        showProgress(false);
-        if (event.getType() == RequestListener.EVENT_GET_DATA_SUCCESS && event.getResult().isSuccess()) {
-            SPUtils.put(this, "UserID", JsonParser.getPerson(event.getResult().getData()).getId());
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            //保存用户名
-            SPUtils.put(this, "UserName", JsonParser.getPerson(event.getResult().getData()).getUsername());
-            startActivity(intent);
-            finish();
-        } else {
-            mPasswordView.setError(getString(R.string.error_incorrect_password));
-            mPasswordView.requestFocus();
-        }
-
-    }
-
     private void login(String email, String password) {
-        HttpRequestVo requestVo = new HttpRequestVo();
-        requestVo.requestDataMap.put("user", email);
-        requestVo.requestDataMap.put("password", password);
-        requestVo.requestDataMap.put("type", "1");
-        requestVo.methodName = "GetUser";
-        HttpManager manager = new HttpManager(LoginActivity.this, LoginActivity.this, requestVo);
-        manager.postRequest();
+        UserService userService = retrofit.create(UserService.class);
+        disposable = userService.login(email, password)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<UserResult>() {
+                    @Override
+                    public void accept(UserResult result) throws Exception {
+                        showProgress(false);
+                        SPUtils.put(LoginActivity.this, "UserID", result.getData().getId());
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        //保存用户名
+                        SPUtils.put(LoginActivity.this, "UserName", result.getData().getUsername());
+                        startActivity(intent);
+                        finish();
+                    }
+                });
     }
 
     //进度条是否显示
@@ -156,37 +125,26 @@ public class LoginActivity extends BaseActivity implements RequestListener {
     /**
      * Shows the progress UI and hides the login form.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
 
@@ -194,6 +152,5 @@ public class LoginActivity extends BaseActivity implements RequestListener {
         //TODO: Replace this with your own logic
         return password.trim().length() > 0;
     }
-
 
 }
