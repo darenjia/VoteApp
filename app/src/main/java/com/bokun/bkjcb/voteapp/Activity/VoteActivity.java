@@ -294,7 +294,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                 strScore.append(",").append(sc);
             }
         }
-        disposable = matchService.submitScore((String) SPUtils.get(this, "UserID", ""), match.getId(), strScore.toString())
+        disposable = matchService.submitScore( match.getId(),(String) SPUtils.get(this, "UserID", ""), strScore.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<HttpResult>() {
