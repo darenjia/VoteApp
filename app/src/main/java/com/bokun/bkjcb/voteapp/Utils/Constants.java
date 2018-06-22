@@ -27,6 +27,7 @@ public class Constants {
     /*
     * 测试IP地址
     * */
+    // webapi 地址  http://192.168.100.4:2345
     public static String TEST_HTTPURL = "http://192.168.100.4:2333/WebService.asmx";
     public static String imgurl = "http://192.168.100.4:2333";
     public static final String URL_CHECK = "http://192.168.100.136:8080/zgzxjkWebService.asmx";

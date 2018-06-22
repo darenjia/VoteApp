@@ -44,7 +44,7 @@
                     android:inputType="number"
                     android:gravity="center"
                     android:maxEms="2"
-                    android:textColor="@color/textPrimary"
+                    android:textColor="@color/colorred"
                     android:background="@drawable/score"
                     android:textSize="30sp"
                     />

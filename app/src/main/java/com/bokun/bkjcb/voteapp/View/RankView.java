@@ -39,10 +39,13 @@ public class RankView {
         for (int i = 0; i < list.size(); i++) {
 
             View child_view = View.inflate(context, R.layout.rank_child_view, null);
-            if (i < 8) {
+            if (i < 10) {
                 ((ImageView) child_view.findViewById(R.id.rank_img)).setImageDrawable(context.getResources().getDrawable(drawables[i]));
-            }else{
-                //((ImageView) child_view.findViewById(R.id.rank_img)).setImageDrawable(""));
+            } else {
+//                ((ImageView) child_view.findViewById(R.id.rank_img)).setVisibility(View.GONE);
+//                ((TextView) child_view.findViewById(R.id.rank_number)).setVisibility(View.VISIBLE);
+//                //((ImageView) child_view.findViewById(R.id.rank_img)).setImageDrawable(""));
+//                ((TextView) child_view.findViewById(R.id.rank_number)).setText(i + 1);
             }
             ((TextView) child_view.findViewById(R.id.rank_name)).setText(list.get(i).getPerson());
             ((TextView) child_view.findViewById(R.id.rank_score)).setText(list.get(i).getScore());

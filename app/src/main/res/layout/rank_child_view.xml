@@ -13,6 +13,8 @@
         android:minHeight="20dp"
          />
 
+
+
     <TextView
         android:id="@+id/rank_name"
         android:layout_width="0dp"

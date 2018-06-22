@@ -396,8 +396,8 @@ public class Utils {
                 R.drawable.man2
         };
         int[] woman_img = {
-                R.drawable.man1,
-                R.drawable.man2
+                R.drawable.woman1,
+                R.drawable.woman2
         };
         int[] drawables;
         Random random = new Random();
