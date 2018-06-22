@@ -69,7 +69,7 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         title.setText(info.getPtitle());
         age.setText(info.getAge());
         position.setText(info.getPosition());
-        if (info.getScore() != "") {
+        if (!info.getScore().equals("")) {
             score.setText(info.getScore());
             score.setEnabled(false);
         }

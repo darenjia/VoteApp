@@ -49,8 +49,8 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigat
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.WrapPagerIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
@@ -163,7 +163,18 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
                 headerViewPager.setCurrentScrollableContainer(fragments.get(position));
             }
         });
+        options = new RequestOptions().placeholder(R.drawable.green).error(R.drawable.green);
+        Glide.with(this).load(Constants.imgurl+ match.getFilerurl()).apply(options).into(pic);//图片加载出来前，显示的图片
+        SPUtils.put(this, "MatchUrl", match.getFilerurl());
+        //  Glide.with(this).load().into(pic);
+        initMagicIndicator();
+        //進度條消失
+        view.setVisibility(View.GONE);
+    }
+    private void initMagicIndicator() {
+
         CommonNavigator commonNavigator = new CommonNavigator(this);
+        commonNavigator.setScrollPivotX(0.35f);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
 
             @Override
@@ -173,42 +184,30 @@ public class VoteActivity extends BaseActivity implements RequestListener, TextC
 
             @Override
             public IPagerTitleView getTitleView(Context context, final int index) {
-                ColorTransitionPagerTitleView colorTransitionPagerTitleView = new ColorTransitionPagerTitleView(context);
-                colorTransitionPagerTitleView.setNormalColor(Color.GRAY);
-                colorTransitionPagerTitleView.setSelectedColor(Color.BLACK);
-                colorTransitionPagerTitleView.setText(personInfos.get(index).getPerson());
-                colorTransitionPagerTitleView.setOnClickListener(new View.OnClickListener() {
+                SimplePagerTitleView simplePagerTitleView = new SimplePagerTitleView(context);
+                simplePagerTitleView.setText(personInfos.get(index).getPerson());
+                simplePagerTitleView.setNormalColor(Color.parseColor("#333333"));
+                simplePagerTitleView.setSelectedColor(Color.parseColor("#e94220"));
+                simplePagerTitleView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         pager.setCurrentItem(index);
                     }
                 });
-                return colorTransitionPagerTitleView;
+                return simplePagerTitleView;
             }
 
             @Override
             public IPagerIndicator getIndicator(Context context) {
-                LinePagerIndicator indicator = new LinePagerIndicator(context);
-                indicator.setMode(LinePagerIndicator.MODE_WRAP_CONTENT);
+                WrapPagerIndicator indicator = new WrapPagerIndicator(context);
+                indicator.setFillColor(Color.parseColor("#ebe4e3"));
                 return indicator;
             }
         });
         indicator.setNavigator(commonNavigator);
         ViewPagerHelper.bind(indicator, pager);
 
-
-        options = new RequestOptions().placeholder(R.drawable.green).error(R.drawable.green);
-
-
-        Glide.with(this).load(Constants.imgurl+ match.getFilerurl()).apply(options).into(pic);//图片加载出来前，显示的图片
-
-
-        SPUtils.put(this, "MatchUrl", match.getFilerurl());
-        //  Glide.with(this).load().into(pic);
-        //進度條消失
-        view.setVisibility(View.GONE);
     }
-
     private void initViewPage() {
         pager = findViewById(R.id.content);
         submit = findViewById(R.id.submit);

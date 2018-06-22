@@ -6,13 +6,11 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.bokun.bkjcb.voteapp.Event.MessageEvent;
 import com.bokun.bkjcb.voteapp.Model.HttpResult;
@@ -42,6 +40,9 @@ public class LoginActivity extends BaseActivity implements RequestListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("登录");
+        setSupportActionBar(toolbar);
         new CheckUpUtil(LoginActivity.this).checkUpadte(true,false);
         mEmailView = (EditText) findViewById(R.id.username);
 
