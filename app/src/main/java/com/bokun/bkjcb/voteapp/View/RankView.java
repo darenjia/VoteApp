@@ -39,7 +39,7 @@ public class RankView {
         for (int i = 0; i < list.size(); i++) {
 
             View child_view = View.inflate(context, R.layout.rank_child_view, null);
-            if (i < 8) {
+            if (i < 10) {
                 ((ImageView) child_view.findViewById(R.id.rank_img)).setImageDrawable(context.getResources().getDrawable(drawables[i]));
             }else{
                 //((ImageView) child_view.findViewById(R.id.rank_img)).setImageDrawable(""));
