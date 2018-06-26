@@ -19,8 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bokun.bkjcb.voteapp.R;
-import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
+import com.bokun.bkjcb.voteapp.Utils.Utils;
 import com.bokun.bkjcb.voteapp.View.ScanView;
 import com.bumptech.glide.Glide;
 import com.mylhyl.zxing.scanner.common.Scanner;
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         String url = (String) SPUtils.get(this, "MatchUrl", "");
         String strTitle = (String) SPUtils.get(this, "MatchTitle", "");
         if (!url.equals("")) {
-            Glide.with(this).load(Constants.imgurl+url).into(pic);
+            Glide.with(this).load(Utils.getImageUrl(url)).into(pic);
             title.setText(strTitle);
         } else {
             history.setVisibility(View.INVISIBLE);
