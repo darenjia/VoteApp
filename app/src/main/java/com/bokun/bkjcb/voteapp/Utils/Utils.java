@@ -396,8 +396,8 @@ public class Utils {
                 R.drawable.man2
         };
         int[] woman_img = {
-                R.drawable.man1,
-                R.drawable.man2
+                R.drawable.woman1,
+                R.drawable.woman2
         };
         int[] drawables;
         Random random = new Random();
@@ -408,6 +408,20 @@ public class Utils {
         }
         return context.getResources().getDrawable(drawables[random.nextInt(1)]);
     }
+    /**
+     * dp2px
+     */
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
 
+    /**
+     * px2dp
+     */
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
 }
 

@@ -17,7 +17,6 @@ import ezy.boost.update.IUpdateParser;
 import ezy.boost.update.UpdateError;
 import ezy.boost.update.UpdateInfo;
 import ezy.boost.update.UpdateManager;
-import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -53,7 +52,6 @@ public class CheckUpUtil {
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
                 VersionService service = retrofit.create(VersionService.class);
-                Call<HttpResult> resultCall = service.checkVersion();
                 try {
                     Response<HttpResult> response = service.checkVersion().execute();
                     if (response.isSuccessful()) {

@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         animation.setRepeatMode(Animation.REVERSE);
         animation.setRepeatCount(Animation.INFINITE);
         animation.setDuration(2000);
-        animation.setInterpolator(new FastOutSlowInInterpolator());
+        animation.setInterpolator(new LinearInterpolator());
         line.setAnimation(animation);
         animation.start();
     }

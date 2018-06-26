@@ -66,7 +66,7 @@ public class MatchResult {
         private String remark;
         private String filerurl;
         private String iscompelete;
-        private List<Person> person;
+        private List<PersonModel> person;
         private List<Judges> judges;
 
         public String getId() {
@@ -133,11 +133,11 @@ public class MatchResult {
             this.iscompelete = iscompelete;
         }
 
-        public List<Person> getPerson() {
+        public List<PersonModel> getPerson() {
             return person;
         }
 
-        public void setPerson(List<Person> person) {
+        public void setPerson(List<PersonModel> person) {
             this.person = person;
         }
 
@@ -149,7 +149,7 @@ public class MatchResult {
             this.judges = judges;
         }
 
-        public static class Person implements Serializable {
+        public static class Person extends PersonModel implements Serializable {
             /**
              * id : 1527237915039
              * activit_id : a0838f0121f34a5d94f4adf3c3427eff

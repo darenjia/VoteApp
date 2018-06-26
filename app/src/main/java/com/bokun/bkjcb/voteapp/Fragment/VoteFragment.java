@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bokun.bkjcb.voteapp.Interface.TextChanged;
-import com.bokun.bkjcb.voteapp.Model.MatchResult;
+import com.bokun.bkjcb.voteapp.Model.PersonModel;
 import com.bokun.bkjcb.voteapp.R;
 import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
@@ -26,12 +26,12 @@ import com.lzy.widget.HeaderScrollHelper;
  * Description :投票Fragment
  */
 public class VoteFragment extends Fragment implements HeaderScrollHelper.ScrollableContainer {
-    private MatchResult.Data.Person info;
+    private PersonModel info;
     private View view;
     private TextChanged textChanged;
     private EditText score;
 
-    public static VoteFragment newInstance(MatchResult.Data.Person person) {
+    public static VoteFragment newInstance(PersonModel person) {
         VoteFragment fragment = new VoteFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("Key", person);
@@ -53,7 +53,7 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
 
         RequestOptions options = new RequestOptions().placeholder(R.drawable.man1).error(R.drawable.man1);
 
-        info = (MatchResult.Data.Person) getArguments().getSerializable("Key");
+        info = (PersonModel) getArguments().getSerializable("Key");
         view = inflater.inflate(R.layout.detail_view, container, false);
         //初始化详情视图
         ImageView img = view.findViewById(R.id.detail_img);

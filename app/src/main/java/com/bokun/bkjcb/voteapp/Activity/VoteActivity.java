@@ -3,6 +3,7 @@ package com.bokun.bkjcb.voteapp.Activity;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.bokun.bkjcb.voteapp.HttpService.MatchService;
 import com.bokun.bkjcb.voteapp.Interface.TextChanged;
 import com.bokun.bkjcb.voteapp.Model.HttpResult;
 import com.bokun.bkjcb.voteapp.Model.MatchResult;
+import com.bokun.bkjcb.voteapp.Model.PersonModel;
 import com.bokun.bkjcb.voteapp.Model.PersonResult;
 import com.bokun.bkjcb.voteapp.R;
 import com.bokun.bkjcb.voteapp.Utils.Constants;
@@ -61,7 +63,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
 
     public static final String VOTE_ACTIVITY_KEY = "key";
     private HeaderViewPager headerViewPager;
-    private List<MatchResult.Data.Person> personInfos;
+    private List<PersonModel> personInfos;
     private ViewPager pager;
     private ArrayList<VoteFragment> fragments;
     private View titleBar_Bg;
@@ -78,6 +80,8 @@ public class VoteActivity extends BaseActivity implements TextChanged {
     private int finishedCount = 0;
     private RequestOptions options;
     private MatchService matchService;
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,7 +249,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                 if (isFinished) {
                     getResult();
                 } else {
-                    submitResult();
+                    showConfirmDialog(match.getPerson());
                 }
             }
         });
@@ -268,10 +272,26 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                 });
     }
 
-    private void showResult(List<PersonResult.Person> persons) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(RankView.builder(this, persons));
-        AlertDialog dialog = builder.create();
+    private void showConfirmDialog(List<PersonModel> persons){
+        builder = new AlertDialog.Builder(this);
+        builder.setView(new RankView().builder(this,persons,1));
+        dialog = builder.create();
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确认提交", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                submitResult();
+            }
+        });
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+
+    }
+    private void showResult(List<PersonModel> persons) {
+        if (builder==null){
+            builder = new AlertDialog.Builder(this);
+        }
+        builder.setView(new RankView().builder(this, persons,0));
+        dialog = builder.create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
     }
@@ -294,7 +314,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                 strScore.append(",").append(sc);
             }
         }
-        disposable = matchService.submitScore((String) SPUtils.get(this, "UserID", ""), match.getId(), strScore.toString())
+        disposable = matchService.submitScore(match.getId(),(String) SPUtils.get(this, "UserID", ""),  strScore.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<HttpResult>() {
@@ -327,10 +347,11 @@ public class VoteActivity extends BaseActivity implements TextChanged {
 
 
     @Override
-    public void onTextChange(MatchResult.Data.Person person, String score) {
+    public void onTextChange(PersonModel person, String score) {
+        person.setScore(score);
         if (scoreResult.get(person.getId()) == null) {
             scoreResult.put(person.getId(), score);
-            if (score == "") {
+            if (score.equals("")) {
                 finishedCount = finishedCount > 0 ? finishedCount-- : 0;
             } else {
                 finishedCount++;
