@@ -17,7 +17,7 @@
                 android:id="@+id/detail_img"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@drawable/man1" />
 
 
             <LinearLayout
@@ -44,7 +44,7 @@
                     android:inputType="number"
                     android:gravity="center"
                     android:maxEms="2"
-                    android:textColor="@color/textPrimary"
+                    android:textColor="@color/red"
                     android:background="@drawable/score"
                     android:textSize="30sp"
                     />
