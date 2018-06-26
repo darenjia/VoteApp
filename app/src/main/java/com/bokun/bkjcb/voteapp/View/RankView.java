@@ -34,9 +34,9 @@ public class RankView {
             R.drawable.fifit,
             R.drawable.six,
             R.drawable.senver,
-            R.drawable.eight
-//           R.drawable.nine,
-//           R.drawable.ten
+            R.drawable.eight,
+            R.drawable.nine,
+            R.drawable.ten
     };
     int type;
     private View view;
