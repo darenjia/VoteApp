@@ -423,5 +423,9 @@ public class Utils {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
+
+  public static String getImageUrl(String url){
+        return Constants.imgurl+url.substring(url.indexOf("/",2));
+  }
 }
 

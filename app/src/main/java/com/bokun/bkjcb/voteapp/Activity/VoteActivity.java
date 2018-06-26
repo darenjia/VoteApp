@@ -30,7 +30,6 @@ import com.bokun.bkjcb.voteapp.Model.MatchResult;
 import com.bokun.bkjcb.voteapp.Model.PersonModel;
 import com.bokun.bkjcb.voteapp.Model.PersonResult;
 import com.bokun.bkjcb.voteapp.R;
-import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 import com.bokun.bkjcb.voteapp.Utils.SystemBarTintManager;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
@@ -164,7 +163,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
             }
         });
         options = new RequestOptions().placeholder(R.drawable.green).error(R.drawable.green);
-        Glide.with(this).load(Constants.imgurl + match.getFilerurl()).apply(options).into(pic);//图片加载出来前，显示的图片
+        Glide.with(this).load(Utils.getImageUrl(match.getFilerurl())).apply(options).into(pic);//图片加载出来前，显示的图片
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
         //  Glide.with(this).load().into(pic);
         initMagicIndicator();

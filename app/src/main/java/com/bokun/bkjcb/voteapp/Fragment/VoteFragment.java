@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.bokun.bkjcb.voteapp.Interface.TextChanged;
 import com.bokun.bkjcb.voteapp.Model.PersonModel;
 import com.bokun.bkjcb.voteapp.R;
-import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -76,7 +75,7 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         if (info.getFileurl().equals("")) {
             img.setImageDrawable(Utils.getRandomImage(getContext(), info.getSex()));
         } else {
-            Glide.with(getContext()).load(Constants.imgurl + info.getFileurl()).apply(options).into(img);
+            Glide.with(getContext()).load(Utils.getImageUrl(info.getFileurl())).apply(options).into(img);
         }
         return view;
     }

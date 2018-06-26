@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.bokun.bkjcb.voteapp.Model.PersonModel;
 import com.bokun.bkjcb.voteapp.R;
-import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -104,24 +103,24 @@ public class RankView {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {
-                if (type==1){
+                if (type == 1) {
                     builder = new ViewHolder(context, R.layout.score_child_view);
-                }else {
-                    builder = new ViewHolder2(context,R.layout.rank_child_view);
+                } else {
+                    builder = new ViewHolder2(context, R.layout.rank_child_view);
                 }
                 view = builder.view;
                 view.setTag(builder);
             } else {
                 builder = (ViewHolder) view.getTag();
             }
-            builder.setContent(list.get(i),i);
+            builder.setContent(list.get(i), i);
             return builder.view;
         }
 
         class ViewHolder2 extends ViewHolder {
 
             public ViewHolder2(Context context, int layoutId) {
-                super(context,layoutId);
+                super(context, layoutId);
 
             }
 
@@ -153,7 +152,7 @@ public class RankView {
             public void setContent(PersonModel person, int position) {
                 name.setText(person.getPerson());
                 score.setText(person.getScore());
-                Glide.with(context).load(Constants.imgurl + person.getFileurl()).apply(options).into(imageView);
+                Glide.with(context).load(Utils.getImageUrl(person.getFileurl())).apply(options).into(imageView);
             }
         }
     }
