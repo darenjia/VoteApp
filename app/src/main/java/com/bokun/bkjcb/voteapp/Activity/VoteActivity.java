@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -54,6 +55,7 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class VoteActivity extends BaseActivity implements TextChanged {
@@ -167,6 +169,13 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
         //  Glide.with(this).load().into(pic);
         initMagicIndicator();
+        if(match.getIscompelete().equals("1")){
+            isFinished=true;
+            progressBar.setVisibility(View.GONE);
+            submit.setVisibility(View.VISIBLE);
+            submit.setText("查看结果");
+            submit.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        }
         //進度條消失
         view.setVisibility(View.GONE);
     }
@@ -258,6 +267,13 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         disposable.dispose();
         disposable = matchService.getResult(match.getPipeliningID())
                 .subscribeOn(Schedulers.io())
+                .onErrorReturn(new Function<Throwable, PersonResult>() {
+                    @Override
+                    public PersonResult apply(Throwable throwable) throws Exception {
+                        Log.i("Deng","蛤铪");
+                        return null;
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<PersonResult>() {
                     @Override
