@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -31,6 +30,7 @@ import com.bokun.bkjcb.voteapp.Model.MatchResult;
 import com.bokun.bkjcb.voteapp.Model.PersonModel;
 import com.bokun.bkjcb.voteapp.Model.PersonResult;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.NetworkUtils;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 import com.bokun.bkjcb.voteapp.Utils.SystemBarTintManager;
 import com.bokun.bkjcb.voteapp.Utils.Utils;
@@ -169,8 +169,8 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
         //  Glide.with(this).load().into(pic);
         initMagicIndicator();
-        if(match.getIscompelete().equals("1")){
-            isFinished=true;
+        if (match.getIscompelete().equals("1")) {
+            isFinished = true;
             progressBar.setVisibility(View.GONE);
             submit.setVisibility(View.VISIBLE);
             submit.setText("查看结果");
@@ -264,20 +264,26 @@ public class VoteActivity extends BaseActivity implements TextChanged {
     }
 
     private void getResult() {
-        disposable.dispose();
+        if (!NetworkUtils.isEnable(this)) {
+            Toast.makeText(this, "网络不可用！", Toast.LENGTH_SHORT).show();
+            return;
+        }
         disposable = matchService.getResult(match.getPipeliningID())
                 .subscribeOn(Schedulers.io())
                 .onErrorReturn(new Function<Throwable, PersonResult>() {
                     @Override
                     public PersonResult apply(Throwable throwable) throws Exception {
-                        Log.i("Deng","蛤铪");
-                        return null;
+                        return new PersonResult();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<PersonResult>() {
                     @Override
                     public void accept(PersonResult result) throws Exception {
+                        if (result.getData() == null) {
+                            Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         if (result.isSuccess()) {
                             showResult(result.getData());
                         } else {
@@ -287,9 +293,9 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                 });
     }
 
-    private void showConfirmDialog(List<PersonModel> persons){
+    private void showConfirmDialog(List<PersonModel> persons) {
         builder = new AlertDialog.Builder(this);
-        builder.setView(new RankView().builder(this,persons,1));
+        builder.setView(new RankView().builder(this, persons, 1));
         dialog = builder.create();
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确认提交", new DialogInterface.OnClickListener() {
             @Override
@@ -301,11 +307,12 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         dialog.show();
 
     }
+
     private void showResult(List<PersonModel> persons) {
-        if (builder==null){
+        if (builder == null) {
             builder = new AlertDialog.Builder(this);
         }
-        builder.setView(new RankView().builder(this, persons,0));
+        builder.setView(new RankView().builder(this, persons, 0));
         dialog = builder.create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
@@ -329,12 +336,21 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                 strScore.append(",").append(sc);
             }
         }
-        disposable = matchService.submitScore(match.getId(),(String) SPUtils.get(this, "UserID", ""),  strScore.toString())
+        disposable = matchService.submitScore(match.getId(), (String) SPUtils.get(this, "UserID", ""), strScore.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(new Function<Throwable, HttpResult>() {
+                    @Override
+                    public HttpResult apply(Throwable throwable) throws Exception {
+                        return new HttpResult();
+                    }
+                })
                 .subscribe(new Consumer<HttpResult>() {
                     @Override
                     public void accept(HttpResult result) throws Exception {
+                        if (result.getMessage() == null) {
+                            Toast.makeText(VoteActivity.this, "网络不可用！", Toast.LENGTH_SHORT).show();
+                        }
                         if (result.isSuccess()) {
                             Toast.makeText(VoteActivity.this, "成功提交评分！", Toast.LENGTH_SHORT).show();
                             isFinished = true;
@@ -406,11 +422,21 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         matchService = retrofit.create(MatchService.class);
         disposable = matchService.getMatch(id)
                 .subscribeOn(Schedulers.io())
+                .onErrorReturn(new Function<Throwable, MatchResult>() {
+                    @Override
+                    public MatchResult apply(Throwable throwable) throws Exception {
+                        return new MatchResult();
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<MatchResult>() {
                     @Override
                     public void accept(MatchResult result) throws Exception {
-                        if (result != null && result.isSuccess()) {
+                        if (result.getData() == null) {
+                            Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (result.isSuccess()) {
                             initData(result);
                         } else {
                             Toast.makeText(VoteActivity.this, "获取活动信息失败，请重试！", Toast.LENGTH_SHORT).show();

@@ -11,15 +11,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.bokun.bkjcb.voteapp.HttpService.UserService;
 import com.bokun.bkjcb.voteapp.Model.UserResult;
 import com.bokun.bkjcb.voteapp.R;
 import com.bokun.bkjcb.voteapp.Utils.CheckUpUtil;
+import com.bokun.bkjcb.voteapp.Utils.NetworkUtils;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -102,14 +105,28 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void login(String email, String password) {
+        if (!NetworkUtils.isEnable(this)) {
+            Toast.makeText(this, "网络不可用！", Toast.LENGTH_SHORT).show();
+            return;
+        }
         UserService userService = retrofit.create(UserService.class);
         disposable = userService.login(email, password)
                 .subscribeOn(Schedulers.io())
+                .onErrorReturn(new Function<Throwable, UserResult>() {
+                    @Override
+                    public UserResult apply(Throwable throwable) throws Exception {
+                        return new UserResult();
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<UserResult>() {
                     @Override
                     public void accept(UserResult result) throws Exception {
                         showProgress(false);
+                        if (result.getData() == null) {
+                            Toast.makeText(LoginActivity.this, "网络错误请稍后再试！", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         SPUtils.put(LoginActivity.this, "UserID", result.getData().getId());
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         //保存用户名
