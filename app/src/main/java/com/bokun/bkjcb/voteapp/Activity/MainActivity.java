@@ -8,32 +8,33 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bokun.bkjcb.voteapp.Adapter.MatchAdapter;
+import com.bokun.bkjcb.voteapp.HttpService.MatchService;
+import com.bokun.bkjcb.voteapp.Model.MatchList;
 import com.bokun.bkjcb.voteapp.R;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
-import com.bokun.bkjcb.voteapp.Utils.Utils;
-import com.bokun.bkjcb.voteapp.View.ScanView;
-import com.bumptech.glide.Glide;
 import com.mylhyl.zxing.scanner.common.Scanner;
 
-public class MainActivity extends AppCompatActivity {
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
-    private TextView textView;
-    private TextView line;
-    private ScanView scanView;
-    private ImageView pic;
-    private TextView title;
-    private CardView history;
+public class MainActivity extends BaseActivity {
+
     private long time;
+    private SwipeRefreshLayout loading;
+    private ListView listView;
+    private MatchAdapter adapter;
+    private MatchList matchs;
 
 
     @Override
@@ -41,35 +42,81 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        scanView = findViewById(R.id.scan_view);
-        line = findViewById(R.id.line);
-        pic = findViewById(R.id.vote_history_background);
-        title = findViewById(R.id.vote_history_title);
-        history = findViewById(R.id.history);
+        loading = findViewById(R.id.refreshView);
+        listView = findViewById(R.id.match_listView);
+        initData();
+        initListener();
 
-        scanView.setOnClickListener(new View.OnClickListener() {
+    }
+
+    private void initListener() {
+        loading.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    //权限还没有授予，需要在这里写申请权限的代码
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.CAMERA}, 60);
-                } else {
-                    //权限已经被授予，在这里直接写要执行的相应方法即可
-                    ScannerActivity.gotoActivity(MainActivity.this, true, ScannerActivity.EXTRA_LASER_LINE_MODE_0, ScannerActivity.EXTRA_SCAN_MODE_1, false, false, false);
-//                    TestMainActivity.gotoActivity(MainActivity.this);
-                }
+            public void onRefresh() {
+                initData();
             }
         });
-        pic.setOnClickListener(new View.OnClickListener() {
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onClick(View view) {
-                String s = (String) SPUtils.get(MainActivity.this, "MatchKey", "");
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+                boolean enable = false;
+                if (listView != null && listView.getChildCount() > 0) {
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = listView.getFirstVisiblePosition() == 0;
+                    // check if the top of the first item is visible
+                    boolean topOfFirstItemVisible = listView.getChildAt(0).getTop() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible && topOfFirstItemVisible;
+                }
+                loading.setEnabled(enable);
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String s = matchs.getData().get(i).getPipeliningID();
                 VoteActivity.gotoVoteActivity(MainActivity.this, s);
             }
         });
+    }
+
+    private void initData() {
+
+        loading.setRefreshing(true);
+        MatchService service = retrofit.create(MatchService.class);
+        String userID = (String) SPUtils.get(this, "UserID", "");
+        disposable = service.getMatchList(userID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<MatchList>() {
+                    @Override
+                    public void accept(MatchList matchList) throws Exception {
+                        matchs = matchList;
+                        initList(matchList);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        loading.setRefreshing(false);
+                        Toast.makeText(MainActivity.this, "获取数据错误,请检查网络！", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    private void initList(MatchList list) {
+        if (adapter == null) {
+            adapter = new MatchAdapter(this, list);
+            listView.setAdapter(adapter);
+        } else {
+            adapter.setData(list);
+        }
+        loading.setRefreshing(false);
     }
 
     @Override
@@ -95,32 +142,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        String url = (String) SPUtils.get(this, "MatchUrl", "");
-        String strTitle = (String) SPUtils.get(this, "MatchTitle", "");
-        if (!url.equals("")) {
-            Glide.with(this).load(Utils.getImageUrl(url)).into(pic);
-            title.setText(strTitle);
-        } else {
-            history.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        int y = scanView.getWidth() / 2;
-        Animation animation = new TranslateAnimation(0, 0, -y / 2, y / 2);
-        animation.setRepeatMode(Animation.REVERSE);
-        animation.setRepeatCount(Animation.INFINITE);
-        animation.setDuration(2000);
-        animation.setInterpolator(new LinearInterpolator());
-        line.setAnimation(animation);
-        animation.start();
-    }
-
-    @Override
     public void onBackPressed() {
         if (System.currentTimeMillis() - time > 1000) {
             time = System.currentTimeMillis();
@@ -129,4 +150,30 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.scanner) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                //权限还没有授予，需要在这里写申请权限的代码
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.CAMERA}, 60);
+            } else {
+                //权限已经被授予，在这里直接写要执行的相应方法即可
+                ScannerActivity.gotoActivity(MainActivity.this, true, ScannerActivity.EXTRA_LASER_LINE_MODE_0, ScannerActivity.EXTRA_SCAN_MODE_1, false, false, false);
+//                    TestMainActivity.gotoActivity(MainActivity.this);
+            }
+        }
+        return true;
+    }
+
+
 }

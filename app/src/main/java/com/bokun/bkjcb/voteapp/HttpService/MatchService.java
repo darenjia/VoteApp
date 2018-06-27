@@ -1,6 +1,7 @@
 package com.bokun.bkjcb.voteapp.HttpService;
 
 import com.bokun.bkjcb.voteapp.Model.HttpResult;
+import com.bokun.bkjcb.voteapp.Model.MatchList;
 import com.bokun.bkjcb.voteapp.Model.MatchResult;
 import com.bokun.bkjcb.voteapp.Model.PersonResult;
 
@@ -16,8 +17,13 @@ import retrofit2.http.Query;
 public interface MatchService {
     @POST("Activity")
     Observable<MatchResult> getMatch(@Query("id") String id);
+
     @POST("Score/submit")
-    Observable<HttpResult> submitScore(@Query("actid")String matchId, @Query("jid")String judgeId, @Query("score")String score);
+    Observable<HttpResult> submitScore(@Query("actid") String matchId, @Query("jid") String judgeId, @Query("score") String score);
+
     @GET("Score/get")
-    Observable<PersonResult> getResult(@Query("id")String id);
+    Observable<PersonResult> getResult(@Query("id") String id);
+
+    @GET("Activity/get")
+    Observable<MatchList> getMatchList(@Query("userid") String id);
 }

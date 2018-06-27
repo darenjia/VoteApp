@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="100dp">
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        app:cardCornerRadius="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/match_img"
+                android:layout_width="160dp"
+                android:layout_height="90dp"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/match_title"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_toEndOf="@id/match_img"
+                android:padding="5dp"
+                android:text="活动名称"
+                android:textColor="@color/textPrimary"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/match_content"
+                android:layout_width="wrap_content"
+                android:layout_height="18dp"
+                android:layout_below="@id/match_title"
+                android:layout_toEndOf="@id/match_img"
+                android:layout_toLeftOf="@id/match_date"
+                android:ellipsize="end"
+                android:paddingEnd="5dp"
+                android:paddingStart="5dp"
+                android:text="活动内容"
+                android:textColor="@color/textSecondGary" />
+
+            <TextView
+                android:id="@+id/match_date"
+                android:layout_width="wrap_content"
+                android:layout_height="26dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                android:paddingBottom="10dp"
+                android:text="2018-05-16" />
+            <com.haozhang.lib.SlantedTextView
+                android:id="@+id/slanted_view"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                app:slantedBackgroundColor="@color/colorAccent"
+                app:slantedLength="24dp"
+                app:slantedMode="right"
+                app:slantedText="已结束"
+                app:slantedTextColor="@color/textColor"
+                app:slantedTextSize="12sp" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</FrameLayout>

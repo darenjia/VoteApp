@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,74 +8,16 @@
     android:orientation="vertical"
     tools:context="com.bokun.bkjcb.voteapp.Activity.MainActivity">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/history"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refreshView"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="5dp"
-        app:cardCornerRadius="5dp">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/history_view"
+        <ListView
+            android:id="@+id/match_listView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:divider="@null"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-            <TextView
-                android:id="@+id/vote_history"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:padding="5dp"
-                android:text="历史投票"
-                android:textColor="@color/textColor"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/vote_history_background"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_below="@id/vote_history"
-                android:scaleType="center"
-                android:src="@drawable/bg" />
-
-            <TextView
-                android:id="@+id/vote_history_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:background="@color/colorPrimary_al"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="儿童节活动"
-                android:textColor="@color/textColor" />
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/history">
-
-        <RelativeLayout
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10dp">
-
-            <com.bokun.bkjcb.voteapp.View.ScanView
-                android:id="@+id/scan_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <TextView
-                android:id="@+id/line"
-                android:layout_width="100dp"
-                android:layout_height="2dp"
-                android:layout_centerInParent="true"
-                android:background="@color/orange" />
-        </RelativeLayout>
-
-    </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>
