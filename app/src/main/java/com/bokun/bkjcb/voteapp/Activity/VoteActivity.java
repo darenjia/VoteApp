@@ -55,7 +55,6 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class VoteActivity extends BaseActivity implements TextChanged {
@@ -270,25 +269,20 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         }
         disposable = matchService.getResult(match.getPipeliningID())
                 .subscribeOn(Schedulers.io())
-                .onErrorReturn(new Function<Throwable, PersonResult>() {
-                    @Override
-                    public PersonResult apply(Throwable throwable) throws Exception {
-                        return new PersonResult();
-                    }
-                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<PersonResult>() {
                     @Override
                     public void accept(PersonResult result) throws Exception {
-                        if (result.getData() == null) {
-                            Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
                         if (result.isSuccess()) {
                             showResult(result.getData());
                         } else {
                             Toast.makeText(VoteActivity.this, "结果尚未出来，请稍后再试！", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -339,18 +333,9 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         disposable = matchService.submitScore(match.getId(), (String) SPUtils.get(this, "UserID", ""), strScore.toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(new Function<Throwable, HttpResult>() {
-                    @Override
-                    public HttpResult apply(Throwable throwable) throws Exception {
-                        return new HttpResult();
-                    }
-                })
                 .subscribe(new Consumer<HttpResult>() {
                     @Override
                     public void accept(HttpResult result) throws Exception {
-                        if (result.getMessage() == null) {
-                            Toast.makeText(VoteActivity.this, "网络不可用！", Toast.LENGTH_SHORT).show();
-                        }
                         if (result.isSuccess()) {
                             Toast.makeText(VoteActivity.this, "成功提交评分！", Toast.LENGTH_SHORT).show();
                             isFinished = true;
@@ -359,6 +344,11 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                         } else {
                             Toast.makeText(VoteActivity.this, "提交失败，请重试！", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText(VoteActivity.this, "未知错误，请稍后再试！", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -422,26 +412,21 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         matchService = retrofit.create(MatchService.class);
         disposable = matchService.getMatch(id)
                 .subscribeOn(Schedulers.io())
-                .onErrorReturn(new Function<Throwable, MatchResult>() {
-                    @Override
-                    public MatchResult apply(Throwable throwable) throws Exception {
-                        return new MatchResult();
-                    }
-                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<MatchResult>() {
                     @Override
                     public void accept(MatchResult result) throws Exception {
-                        if (result.getData() == null) {
-                            Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
                         if (result.isSuccess()) {
                             initData(result);
                         } else {
                             Toast.makeText(VoteActivity.this, "获取活动信息失败，请重试！", Toast.LENGTH_SHORT).show();
                             finish();
                         }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
