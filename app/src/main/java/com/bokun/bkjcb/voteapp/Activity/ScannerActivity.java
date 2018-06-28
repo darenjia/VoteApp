@@ -45,7 +45,10 @@ public class ScannerActivity extends DeCodeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+
+        Toolbar tool = (Toolbar) findViewById(R.id.toolbar);
+        tool.setTitle("扫一扫");
+        setSupportActionBar(tool);
         mScannerView = (ScannerView) findViewById(R.id.scanner_view);
         mScannerView.setOnScannerCompletionListener(this);
 

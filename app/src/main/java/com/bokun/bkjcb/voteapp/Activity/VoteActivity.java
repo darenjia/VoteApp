@@ -280,7 +280,8 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                 .subscribe(new Consumer<PersonResult>() {
                     @Override
                     public void accept(PersonResult result) throws Exception {
-                        if (result.getData() == null) {
+
+                        if (result.getMessage() == null) {
                             Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
                             return;
                         }
