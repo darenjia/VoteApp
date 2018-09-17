@@ -1,11 +1,11 @@
-package com.bokun.bkjcb.on_siteinspection.Utils;
+package com.bokun.bkjcb.voteapp.Utils;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.util.Log;
 
-import com.bokun.bkjcb.on_siteinspection.JCApplication;
 import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.File;
@@ -21,16 +21,23 @@ public class CacheUtil {
     private Context context;
     public DiskLruCache cache;
     private final int valueCount = 1;
-    private final long max_size = 50 * 1024 * 1024;
-    private final String fileName = "jianchajihua";
+    private final long max_size = 10 * 1024 * 1024;
+    private final String fileName = "VoteData";
 
-    public CacheUtil() {
-        this.context = JCApplication.getContext();
+    public CacheUtil(Context context) {
+        this.context = context;
     }
 
     //主动抛出异常
-    public void getCache() throws IOException {
-        cache = DiskLruCache.open(getDiskCacheDir(), getAppVersion(), valueCount, max_size);
+    public CacheUtil getCache(){
+        try {
+            cache = DiskLruCache.open(getDiskCacheDir(), getAppVersion(), valueCount, max_size);
+        } catch (IOException e) {
+            //e.printStackTrace();
+            Log.i("GetCacheError", e.getMessage());
+            return null;
+        }
+        return this;
     }
 
     public File getDiskCacheDir() {

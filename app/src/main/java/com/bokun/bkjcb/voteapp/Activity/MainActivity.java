@@ -44,7 +44,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("活动");
+        toolbar.setTitle("活动列表");
         setSupportActionBar(toolbar);
 
         loading = findViewById(R.id.refreshView);

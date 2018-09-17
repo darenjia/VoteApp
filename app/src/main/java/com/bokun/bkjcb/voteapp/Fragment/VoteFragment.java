@@ -29,11 +29,13 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
     private View view;
     private TextChanged textChanged;
     private EditText score;
+    private boolean isCompleted;
 
-    public static VoteFragment newInstance(PersonModel person) {
+    public static VoteFragment newInstance(PersonModel person, boolean isCompleted) {
         VoteFragment fragment = new VoteFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("Key", person);
+        bundle.putBoolean("IsCompleted", isCompleted);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -53,6 +55,7 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         RequestOptions options = new RequestOptions().placeholder(R.drawable.man1).error(R.drawable.man1);
 
         info = (PersonModel) getArguments().getSerializable("Key");
+        isCompleted = getArguments().getBoolean("IsCompleted");
         view = inflater.inflate(R.layout.detail_view, container, false);
         //初始化详情视图
         ImageView img = view.findViewById(R.id.detail_img);
@@ -70,6 +73,8 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         position.setText(info.getPosition());
         if (!info.getScore().equals("")) {
             score.setText(info.getScore());
+        }
+        if (isCompleted) {
             score.setEnabled(false);
         }
         if (info.getFileurl().equals("")) {
@@ -112,7 +117,7 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         });
     }
 
-    private boolean isSuccess(String s) {
+    public static boolean isSuccess(String s) {
         try {
             int num = Integer.valueOf(s);
             if (num > 100 || num < 0) {

@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -30,6 +31,7 @@ import com.bokun.bkjcb.voteapp.Model.MatchResult;
 import com.bokun.bkjcb.voteapp.Model.PersonModel;
 import com.bokun.bkjcb.voteapp.Model.PersonResult;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.CacheUtil;
 import com.bokun.bkjcb.voteapp.Utils.NetworkUtils;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 import com.bokun.bkjcb.voteapp.Utils.SystemBarTintManager;
@@ -52,6 +54,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.Simple
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -82,6 +85,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
     private MatchService matchService;
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
+    private TextView content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,14 +147,36 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         SPUtils.put(this, "MatchTitle", match.getTitle());
         scoreResult = new HashMap<>();
         personInfos = match.getPerson();
+
         if (scores != null) {
             for (int i = 0; i < scores.length; i++) {
                 personInfos.get(i).setScore(scores[i]);
             }
+        } else {
+            if (!isFinished) {
+                CacheUtil cacheUtil = new CacheUtil(this).getCache();
+                String scoreStr = cacheUtil != null ? cacheUtil.getData(match.getId()) : null;
+                if (!TextUtils.isEmpty(scoreStr)) {
+                    String[] users = scoreStr.split(",");
+                    for (int i = 0; i < personInfos.size(); i++) {
+                        for (String user : users) {
+                            String[] info = user.split(":");
+                            if (info.length > 1) {
+                                if (personInfos.get(i).getId().equals(info[0])) {
+                                    personInfos.get(i).setScore(info[1]);
+                                    scoreResult.put(info[0], info[1]);
+                                }
+                            }
+                        }
+                    }
+                    finishedCount = users.length;
+                    setProgress();
+                }
+            }
         }
         fragments = new ArrayList<>();
         for (int i = 0; i < personInfos.size(); i++) {
-            VoteFragment fragment = VoteFragment.newInstance(personInfos.get(i));
+            VoteFragment fragment = VoteFragment.newInstance(personInfos.get(i), isFinished);
             fragment.setTextChanged(this);
             fragments.add(fragment);
         }
@@ -167,6 +193,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         Glide.with(this).load(Utils.getImageUrl(match.getFilerurl())).apply(options).into(pic);//图片加载出来前，显示的图片
         SPUtils.put(this, "MatchUrl", match.getFilerurl());
         //  Glide.with(this).load().into(pic);
+        content.setText(match.getContent());
         initMagicIndicator();
         if (match.getIscompelete().equals("1")) {
             isFinished = true;
@@ -221,6 +248,7 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         pager = findViewById(R.id.content);
         submit = findViewById(R.id.submit);
         progressBar = findViewById(R.id.progress_bar);
+        content = findViewById(R.id.match_info);
         ImageView back = findViewById(R.id.back);
         title = findViewById(R.id.title);
         pic = findViewById(R.id.image_content);
@@ -234,6 +262,16 @@ public class VoteActivity extends BaseActivity implements TextChanged {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (content.getVisibility() == View.GONE) {
+                    content.setVisibility(View.VISIBLE);
+                } else {
+                    content.setVisibility(View.GONE);
+                }
             }
         });
         indicator = findViewById(R.id.magic_indicator);
@@ -319,9 +357,9 @@ public class VoteActivity extends BaseActivity implements TextChanged {
         StringBuilder strScore = new StringBuilder();
         for (int i = 0; i < match.getPerson().size(); i++) {
             String sc = scoreResult.get(match.getPerson().get(i).getId());
-            if (sc == null || sc.equals("")) {
+            if (sc == null || sc.equals("") || !VoteFragment.isSuccess(sc)) {
                 pager.setCurrentItem(i);
-                Toast.makeText(this, "请先完成评分！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "请先完成评分！分数为0到100", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (i == 0) {
@@ -377,16 +415,20 @@ public class VoteActivity extends BaseActivity implements TextChanged {
             } else {
                 finishedCount++;
             }
-            progressBar.setProgress(finishedCount * 100 / personInfos.size());
-            if (progressBar.getProgress() == 100) {
-                progressBar.setVisibility(View.GONE);
-                submit.setVisibility(View.VISIBLE);
-            } else {
-                progressBar.setVisibility(View.VISIBLE);
-                submit.setVisibility(View.GONE);
-            }
+            setProgress();
         } else {
             scoreResult.put(person.getId(), score);
+        }
+    }
+
+    private void setProgress() {
+        progressBar.setProgress(finishedCount * 100 / personInfos.size());
+        if (progressBar.getProgress() == 100) {
+            progressBar.setVisibility(View.GONE);
+            submit.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            submit.setVisibility(View.GONE);
         }
     }
 
@@ -427,8 +469,55 @@ public class VoteActivity extends BaseActivity implements TextChanged {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
                         Toast.makeText(VoteActivity.this, "获取数据失败！", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 });
     }
 
+    @Override
+    public void onBackPressed() {
+        showTips();
+    }
+
+    private void showTips() {
+        if (isFinished) {
+            finish();
+        } else {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("提示")
+                    .setMessage("评分尚未完成,是否退出？")
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    })
+                    .setPositiveButton("退出", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            saveData();
+                            finish();
+                        }
+                    })
+                    .create();
+            dialog.show();
+        }
+    }
+
+    private void saveData() {
+        StringBuilder builder = new StringBuilder();
+        CacheUtil cacheUtil = new CacheUtil(this);
+        for (Map.Entry<String, String> entry : scoreResult.entrySet()) {
+            if (!entry.getValue().equals("")) {
+                builder.append(entry.getKey()).append(":").append(entry.getValue()).append(",");
+            }
+        }
+        String cacheStr = builder.toString();
+        if (cacheStr.length() > 0) {
+            cacheStr = cacheStr.substring(0, cacheStr.length() - 1);
+        }
+        if (cacheUtil.getCache() != null) {
+            cacheUtil.saveData(match.getId(), cacheStr);
+        }
+    }
 }

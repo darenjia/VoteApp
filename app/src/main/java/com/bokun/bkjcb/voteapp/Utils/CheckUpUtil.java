@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CheckUpUtil {
     private Context context;
-    private String mCheckUrl = Constants.TEST_HTTPURL;
+    private String mCheckUrl = Constants.BASE_URL;
     private String mUpdateUrl = Constants.URL_SOFT;
 
     public CheckUpUtil(Context context) {

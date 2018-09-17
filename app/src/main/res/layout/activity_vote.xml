@@ -19,21 +19,35 @@
             android:orientation="vertical"
             app:hvp_topOffset="50dp">
 
-
-            <ImageView
-                android:id="@+id/image_content"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:contentDescription="@string/app_name"
-                android:scaleType="centerCrop"
-              />
+                android:layout_height="250dp">
+
+                <ImageView
+                    android:id="@+id/image_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:contentDescription="@string/app_name"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:id="@+id/match_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/grayBlack"
+                    android:padding="5dp"
+                    android:textColor="@color/textSecondColor"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
 
             <net.lucode.hackware.magicindicator.MagicIndicator
                 android:id="@+id/magic_indicator"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:background="@color/textColor"
-                android:layout_below="@id/image_content" />
+                android:layout_below="@id/image_content"
+                android:background="@color/textColor" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/content"
@@ -43,39 +57,40 @@
 
         </com.lzy.widget.HeaderViewPager>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:padding="10dp"
         android:background="@color/textColor"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <com.daimajia.numberprogressbar.NumberProgressBar
             android:id="@+id/progress_bar"
+            style="@style/NumberProgressBar_Funny_Orange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            style="@style/NumberProgressBar_Funny_Orange"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            app:progress_unreached_bar_height="2dp"
+            app:progress_current="0"
+            app:progress_max="100"
             app:progress_reached_bar_height="3dp"
             app:progress_text_size="16sp"
-            app:progress_max="100"
-            app:progress_current="0"
-            />
+            app:progress_unreached_bar_height="2dp" />
+
         <Button
             android:id="@+id/submit"
             android:layout_width="match_parent"
             android:layout_height="36dp"
-            android:text="提交"
-            android:textSize="16sp"
-            android:background="@color/lightGreen"
-            android:textColor="@color/textColor"
             android:layout_marginLeft="10dp"
-            android:visibility="gone"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:background="@color/lightGreen"
+            android:text="查看结果"
+            android:textColor="@color/textColor"
+            android:textSize="16sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <include

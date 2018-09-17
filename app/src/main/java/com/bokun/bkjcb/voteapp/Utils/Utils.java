@@ -425,7 +425,7 @@ public class Utils {
     }
 
   public static String getImageUrl(String url){
-        return Constants.imgurl+url.substring(url.indexOf("/",2));
+        return Constants.IMGURL+url;
   }
 }
 

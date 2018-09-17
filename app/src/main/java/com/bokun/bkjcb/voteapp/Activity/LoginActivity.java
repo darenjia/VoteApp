@@ -22,7 +22,6 @@ import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -114,28 +113,28 @@ public class LoginActivity extends BaseActivity {
         UserService userService = retrofit.create(UserService.class);
         disposable = userService.login(email, password)
                 .subscribeOn(Schedulers.io())
-                .onErrorReturn(new Function<Throwable, UserResult>() {
-                    @Override
-                    public UserResult apply(Throwable throwable) throws Exception {
-                        return new UserResult();
-                    }
-                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<UserResult>() {
                     @Override
                     public void accept(UserResult result) throws Exception {
                         showProgress(false);
-                        if (result.getData() == null) {
-                            Toast.makeText(LoginActivity.this, "网络错误请稍后再试！", Toast.LENGTH_SHORT).show();
-                            return;
+                        if (result.isSuccess()) {
+                            SPUtils.put(LoginActivity.this, "UserID", result.getData().getId());
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            //保存用户名
+                            SPUtils.put(LoginActivity.this, "UserName", result.getData().getUsername());
+                            SPUtils.put(LoginActivity.this, "password", result.getData().getPass());
+                            startActivity(intent);
+                            finish();
+                        }else {
+                            Toast.makeText(LoginActivity.this, "用户名或密码错误！", Toast.LENGTH_SHORT).show();
                         }
-                        SPUtils.put(LoginActivity.this, "UserID", result.getData().getId());
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        //保存用户名
-                        SPUtils.put(LoginActivity.this, "UserName", result.getData().getUsername());
-                        SPUtils.put(LoginActivity.this, "password", result.getData().getUsername());
-                        startActivity(intent);
-                        finish();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        showProgress(false);
+                        Toast.makeText(LoginActivity.this, "网络错误请稍后再试！", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
