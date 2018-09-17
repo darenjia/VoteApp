@@ -62,8 +62,10 @@ public class LoginActivity extends BaseActivity {
         mProgressView = findViewById(R.id.login_progress);
         //显示上次记录的用户名
         String name = (String) SPUtils.get(this, "UserName", "");
+        String pass = (String) SPUtils.get(this, "password", "");
         if (name != "") {
             mEmailView.setText(name);
+            mPasswordView.setText(pass);
         }
     }
 
@@ -131,6 +133,7 @@ public class LoginActivity extends BaseActivity {
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         //保存用户名
                         SPUtils.put(LoginActivity.this, "UserName", result.getData().getUsername());
+                        SPUtils.put(LoginActivity.this, "password", result.getData().getUsername());
                         startActivity(intent);
                         finish();
                     }

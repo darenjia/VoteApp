@@ -57,8 +57,8 @@ public class MatchAdapter extends BaseAdapter {
                 .setText(R.id.match_content, getItem(i).getContent())
                 .setText(R.id.match_date, getItem(i).getDate())
                 .setSlantedView(R.id.slanted_view,
-                        getItem(i).getIscomplete().equals("0") ? "已完成" : "进行中",
-                        getItem(i).getIscomplete().equals("0") ? context.getResources().getColor(R.color.lightGreen) : context.getResources().getColor(R.color.orange));
+                        getItem(i).getIscomplete().equals("1") ? "已完成" : "进行中",
+                        getItem(i).getIscomplete().equals("1") ? context.getResources().getColor(R.color.lightGreen) : context.getResources().getColor(R.color.orange));
         return view;
     }
 
