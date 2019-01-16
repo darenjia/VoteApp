@@ -14,4 +14,5 @@
         completions."
     </string>
     <string name="title_activity_voting">votingActivity</string>
+    <string name="title_activity_visitor_login">VisitorLoginActivity</string>
 </resources>

@@ -6,4 +6,11 @@
         android:icon="@drawable/icon_sao"
         android:title="扫一扫"
         app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/exit"
+        android:title="注销"
+        app:showAsAction="collapseActionView" />
+
 </menu>

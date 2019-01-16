@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="600dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
@@ -15,26 +15,51 @@
         android:textColor="@color/textColor"
         android:textSize="20sp" />
 
-    <HorizontalScrollView
-        android:id="@+id/sc"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="0dp"
-        android:scrollbars="none">
+        android:paddingTop="20dp"
+        android:paddingLeft="20dp">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/person_img"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/circle_bg"
+            android:scaleType="centerCrop"
+            android:src="@drawable/man1" />
+
+        <TextView
+            android:id="@+id/person_title"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/person_img"
+            android:text="我的中国心"
+            android:layout_marginLeft="10dp"
+            android:textSize="18sp" />
 
-            <GridView
-                android:id="@+id/grid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:numColumns="auto_fit"
-                android:stretchMode="spacingWidthUniform" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/person_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/person_title"
+            android:layout_toRightOf="@id/person_img"
+            android:layout_margin="10dp"
+            android:text="大春"
+            android:textSize="18sp" />
 
-    </HorizontalScrollView>
+        <TextView
+            android:id="@+id/person_score"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/score_bg"
+            android:text="80"
+            android:textColor="@color/red"
+            android:textSize="36sp" />
+    </RelativeLayout>
 </LinearLayout>

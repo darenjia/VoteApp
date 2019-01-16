@@ -16,10 +16,10 @@ import retrofit2.http.Query;
  */
 public interface MatchService {
     @POST("Activity")
-    Observable<MatchResult> getMatch(@Query("id") String id);
+    Observable<MatchResult> getMatch(@Query("id") String id,@Query("userId") String userId);
 
     @POST("Score/submit")
-    Observable<HttpResult> submitScore(@Query("actid") String matchId, @Query("jid") String judgeId, @Query("score") String score);
+    Observable<HttpResult> submitScore(@Query("actid") String matchId, @Query("jid") String judgeId, @Query("score") String score,@Query("personid") String personId,@Query("name") String name);
 
     @GET("Score/get")
     Observable<PersonResult> getResult(@Query("id") String id);

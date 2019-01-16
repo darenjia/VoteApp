@@ -14,9 +14,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bokun.bkjcb.voteapp.HttpService.UserService;
+import com.bokun.bkjcb.voteapp.Model.User;
 import com.bokun.bkjcb.voteapp.Model.UserResult;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Utils.AppManager;
 import com.bokun.bkjcb.voteapp.Utils.CheckUpUtil;
+import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.NetworkUtils;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 
@@ -41,11 +44,12 @@ public class LoginActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("登录");
         setSupportActionBar(toolbar);
-        new CheckUpUtil(LoginActivity.this).checkUpadte(true, false);
+
         mEmailView = (EditText) findViewById(R.id.username);
+       int flag = getIntent().getIntExtra("flag",0);
 
         mPasswordView = (EditText) findViewById(R.id.password);
-
+        Button visitorSignIn=findViewById(R.id.visitor_sign_in_button);
         //给按钮添加点击事件
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
@@ -55,13 +59,34 @@ public class LoginActivity extends BaseActivity {
 
             }
         });
-
+        visitorSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this,VisitorLoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         //显示上次记录的用户名
         String name = (String) SPUtils.get(this, "UserName", "");
         String pass = (String) SPUtils.get(this, "password", "");
+        int type = (int) SPUtils.get(this, "Type", 0);
+        String id = (String) SPUtils.get(this, "UserID", "");
+        if(flag==0){
+            new CheckUpUtil(LoginActivity.this).checkUpadte(true, false);
+            if(id != ""&&type==1){
+                Constants.user=new User();
+                Constants.user.setName(name);
+                Constants.user.setGuid(id);
+                Constants.user.setType(type);
+                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+
         if (name != "") {
             mEmailView.setText(name);
             mPasswordView.setText(pass);
@@ -124,6 +149,11 @@ public class LoginActivity extends BaseActivity {
                             //保存用户名
                             SPUtils.put(LoginActivity.this, "UserName", result.getData().getUsername());
                             SPUtils.put(LoginActivity.this, "password", result.getData().getPass());
+                            SPUtils.put(LoginActivity.this, "Type", 0);
+                            Constants.user=new User();
+                            Constants.user.setType(0);
+                            Constants.user.setGuid(result.getData().getId());
+                            Constants.user.setName(result.getData().getUsername());
                             startActivity(intent);
                             finish();
                         }else {
@@ -172,4 +202,9 @@ public class LoginActivity extends BaseActivity {
         return password.trim().length() > 0;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AppManager.getAppManager().addActivity(this);
+    }
 }

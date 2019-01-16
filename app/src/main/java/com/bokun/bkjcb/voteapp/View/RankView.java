@@ -27,9 +27,6 @@ public class RankView {
             R.drawable.first,
             R.drawable.second,
             R.drawable.third,
-//            R.drawable.fourth,
-//            R.drawable.fifth,
-//            R.drawable.sixth
             R.drawable.four,
             R.drawable.fifit,
             R.drawable.six,
@@ -44,10 +41,7 @@ public class RankView {
     public View builder(Context context, List<PersonModel> list, int type) {
         this.type = type;
         if (type == 1) {
-            view = View.inflate(context, R.layout.score_view, null);
-            GridView gridView = view.findViewById(R.id.grid);
-            setHorizontalGridView(list.size(), gridView, context);
-            gridView.setAdapter(new MyListAdapter(list, context));
+
         } else {
             view = View.inflate(context, R.layout.rank_view, null);
             ListView layout = view.findViewById(R.id.result_view);

@@ -31,11 +31,11 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
     private EditText score;
     private boolean isCompleted;
 
-    public static VoteFragment newInstance(PersonModel person, boolean isCompleted) {
+    public static VoteFragment newInstance(PersonModel person) {
         VoteFragment fragment = new VoteFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("Key", person);
-        bundle.putBoolean("IsCompleted", isCompleted);
+
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -48,6 +48,10 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         return score.getText().toString();
     }
 
+    public void hasCompleted(){
+        score.setEnabled(false);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,7 +59,7 @@ public class VoteFragment extends Fragment implements HeaderScrollHelper.Scrolla
         RequestOptions options = new RequestOptions().placeholder(R.drawable.man1).error(R.drawable.man1);
 
         info = (PersonModel) getArguments().getSerializable("Key");
-        isCompleted = getArguments().getBoolean("IsCompleted");
+        isCompleted = info.getIscompleted().equals("true");
         view = inflater.inflate(R.layout.detail_view, container, false);
         //初始化详情视图
         ImageView img = view.findViewById(R.id.detail_img);

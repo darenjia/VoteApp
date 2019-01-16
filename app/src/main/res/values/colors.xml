@@ -13,4 +13,7 @@
     <color name="colorPrimary_al">#5a656565</color>
     <color name="red">#FF0000</color>
     <color name="grayBlack">#84757575</color>
+    <color name="lightGray">#84bbbcbd</color>
+    <color name="whiteGray">#e1e1e3</color>
+    <color name="whiteWithLittleGray">#f0f0f0</color>
 </resources>

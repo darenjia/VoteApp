@@ -26,13 +26,15 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="10dp"
-            android:src="@drawable/back" />
+            android:src="@drawable/reback" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/back"
+            android:layout_toRightOf="@id/back"
+            android:gravity="center_vertical"
             android:text="我是标题栏"
             android:textColor="#FFF"
             android:textSize="20sp" />

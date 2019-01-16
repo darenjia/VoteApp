@@ -17,6 +17,11 @@ public class PersonModel implements Serializable{
     protected String remark;
     protected String score;
     protected String fileurl;
+    /**
+     * iscompleted : true
+     */
+
+    private String iscompleted;
 
     public String getId() {
         return id;
@@ -96,5 +101,13 @@ public class PersonModel implements Serializable{
 
     public void setFileurl(String fileurl) {
         this.fileurl = fileurl;
+    }
+
+    public String getIscompleted() {
+        return iscompleted;
+    }
+
+    public void setIscompleted(String iscompleted) {
+        this.iscompleted = iscompleted;
     }
 }

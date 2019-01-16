@@ -22,6 +22,8 @@ import com.bokun.bkjcb.voteapp.Adapter.MatchAdapter;
 import com.bokun.bkjcb.voteapp.HttpService.MatchService;
 import com.bokun.bkjcb.voteapp.Model.MatchList;
 import com.bokun.bkjcb.voteapp.R;
+import com.bokun.bkjcb.voteapp.Sql.DBUtil;
+import com.bokun.bkjcb.voteapp.Utils.Constants;
 import com.bokun.bkjcb.voteapp.Utils.SPUtils;
 import com.mylhyl.zxing.scanner.common.Scanner;
 
@@ -84,33 +86,37 @@ public class MainActivity extends BaseActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String s = matchs.getData().get(i).getPipeliningID();
+                String s = matchs.getData().get(i).getActivityid();
                 VoteActivity.gotoVoteActivity(MainActivity.this, s);
             }
         });
     }
 
     private void initData() {
-
-        loading.setRefreshing(true);
-        MatchService service = retrofit.create(MatchService.class);
-        String userID = (String) SPUtils.get(this, "UserID", "");
-        disposable = service.getMatchList(userID)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MatchList>() {
-                    @Override
-                    public void accept(MatchList matchList) throws Exception {
-                        matchs = matchList;
-                        initList(matchList);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        loading.setRefreshing(false);
-                        Toast.makeText(MainActivity.this, "获取数据错误,请检查网络！", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        if (Constants.user.getType() == 0) {
+            loading.setRefreshing(true);
+            MatchService service = retrofit.create(MatchService.class);
+            String userID = (String) SPUtils.get(this, "UserID", "");
+            disposable = service.getMatchList(userID)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<MatchList>() {
+                        @Override
+                        public void accept(MatchList matchList) throws Exception {
+                            matchs = matchList;
+                            initList(matchList);
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            loading.setRefreshing(false);
+                            Toast.makeText(MainActivity.this, "获取数据错误,请检查网络！", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            matchs = DBUtil.getActivity(Constants.user, this);
+            initList(matchs);
+        }
 
     }
 
@@ -176,9 +182,18 @@ public class MainActivity extends BaseActivity {
                 ScannerActivity.gotoActivity(MainActivity.this, true, ScannerActivity.EXTRA_LASER_LINE_MODE_0, ScannerActivity.EXTRA_SCAN_MODE_1, false, false, false);
 //                    TestMainActivity.gotoActivity(MainActivity.this);
             }
+        } else if (item.getItemId() == R.id.exit) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.putExtra("flag",1);
+            startActivity(intent);
+            finish();
         }
         return true;
     }
 
-
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        initData();
+    }
 }

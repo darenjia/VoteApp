@@ -26,6 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_toEndOf="@id/match_img"
+                android:layout_toRightOf="@id/match_img"
                 android:padding="5dp"
                 android:text="活动名称"
                 android:textColor="@color/textPrimary"
@@ -37,6 +38,7 @@
                 android:layout_height="18dp"
                 android:layout_below="@id/match_title"
                 android:layout_toEndOf="@id/match_img"
+                android:layout_toRightOf="@id/match_img"
                 android:layout_toLeftOf="@id/match_date"
                 android:ellipsize="end"
                 android:paddingEnd="5dp"
@@ -50,6 +52,7 @@
                 android:layout_height="26dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
                 android:paddingBottom="10dp"
                 android:text="2018-05-16" />

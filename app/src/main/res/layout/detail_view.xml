@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/whiteWithLittleGray"
     android:padding="10dp">
 
     <LinearLayout
@@ -11,7 +12,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/textColor">
 
             <ImageView
                 android:id="@+id/detail_img"
@@ -20,74 +22,78 @@
                 android:src="@drawable/man1" />
 
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/detail_img"
-                android:orientation="vertical"
-                android:gravity="right">
+                android:layout_toRightOf="@id/detail_img">
+
+                <ImageView
+                    android:layout_width="146dp"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/score"
+                    android:paddingTop="10dp"/>
 
                 <EditText
                     android:id="@+id/detail_score"
                     android:layout_width="146dp"
                     android:layout_height="120dp"
-                    android:layout_margin="20dp"
-                    android:inputType="number"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:paddingTop="10dp"
+                    android:background="@null"
                     android:gravity="center"
-                    android:maxLength="3"
                     android:hint="分数"
-                    android:textColor="@color/red"
-                    android:background="@drawable/score"
-                    android:textSize="30sp"
-                    />
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:textColor="@color/lightGreen"
+                    android:textSize="30sp" />
 
 
-            </LinearLayout>
-
-
-
-            <LinearLayout
-                android:id="@+id/detail_person_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/detail_img"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/detail_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/detail_img"
-                    android:layout_centerHorizontal="true"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="name1"
-                    android:textColor="@color/textPrimary"
-                    android:textSize="20dp" />
-
-                <TextView
-                    android:id="@+id/detail_age"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="age"
-                    android:textColor="@color/textSecondGary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/detail_position"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="name"
-                    android:textColor="@color/textSecondGary"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-
-
+            </FrameLayout>
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/detail_person_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rect_bg"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/detail_name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:text="name1"
+                android:textColor="@color/textPrimary"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/detail_age"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:text="age"
+                android:textColor="@color/textSecondGary"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/detail_position"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:text="自贸区水务环保中队的四级主办"
+                android:textColor="@color/textSecondGary"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -98,19 +104,20 @@
                 android:id="@+id/detail_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="left"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:gravity="left"
                 android:text="info"
-                android:textColor="@color/textPrimary"
+                android:textColor="@color/textSecondGary"
                 android:textSize="18dp" />
 
             <TextView
                 android:id="@+id/detail_title"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="154132"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="154132"
                 android:textColor="@color/textPrimary"
                 android:textSize="20sp" />
 

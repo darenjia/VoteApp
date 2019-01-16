@@ -66,6 +66,7 @@ public class MatchResult {
         private String remark;
         private String filerurl;
         private String iscompelete;
+        private String type;
         private List<PersonModel> person;
         private List<Judges> judges;
 
@@ -127,6 +128,14 @@ public class MatchResult {
 
         public String getIscompelete() {
             return iscompelete;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
         }
 
         public void setIscompelete(String iscompelete) {

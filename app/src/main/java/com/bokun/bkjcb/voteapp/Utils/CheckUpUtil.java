@@ -36,7 +36,10 @@ public class CheckUpUtil {
     }
 
     public void checkUpadte(boolean isManual, boolean isAutoInstall) {
-        UpdateManager.setDebuggable(true);
+        if (android.os.Build.VERSION.SDK_INT < 21) {
+            return;
+        }
+        UpdateManager.setDebuggable(false);
         UpdateManager.setWifiOnly(false);
 //        UpdateManager.check(context);
         check(isManual, true, false, false, false, 998, isAutoInstall);
